@@ -1,0 +1,40 @@
+/* Sidebar.module.css */
+.sidebar {
+    width: 250px;
+    min-height: 100vh;
+    background-color: var(--color-surface);
+    border-right: 1px solid var(--color-border);
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-sm);
+}
+
+.logo {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: var(--space-lg);
+    text-align: center;
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.navItem {
+    text-decoration: none;
+    color: var(--color-text-primary);
+    font-weight: 500;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    transition: background 0.2s, color 0.2s;
+}
+
+.navItem:hover {
+    background-color: var(--color-secondary);
+    color: var(--color-on-secondary);
+}

@@ -1,0 +1,169 @@
+1. Organisation générale
+
+app/
+│
+├── core/                  # noyau (extensions, config, db, sécurité, logging)
+│   ├── config.py
+│   ├── extensions.py
+│   └── security.py
+│
+├── common/                # utilitaires partagés (réponses, helpers, erreurs)
+│   ├── response.py
+│   ├── exceptions.py
+│   └── utils.py
+│
+├── modules/               # chaque "module métier" est indépendant
+│   │
+│   ├── factory/           # structure physique et organisation technique
+│   │   ├── models/
+│   │   │   ├── site.py                     # adresses du site
+│   │   │   ├── division.py                 # division (ex: service / ateliers / lignes de production --autoréférencement)
+│   │   │   └── division_certification.py   # compétences requise pour occuper un poste (ex: EXPEDITION = CACES)
+│   │   │    
+│   │   ├── schemas/
+│   │   ├── services/
+│   │   ├── routes/
+│   │   └── __init__.py
+│   │
+│   ├── machines/           # structure physique et organisation technique
+│   │   ├── models/
+│   │   │   ├── machine.py # liste des machines avec autoréférencement
+│   │   │   └── machine_document.py    # documents techniques liés (manuels, schémas, certificats)
+│   │   ├── schemas/
+│   │   ├── services/
+│   │   ├── routes/
+│   │   └── __init__.py
+│   │
+│   ├── hr/                # ressources humaines appliquées à la prod
+│   │   ├── models/
+│   │   │   ├── employee.py                   # Fiche identité employé
+│   │   │   ├── certification.py              # compétences / habilitations
+│   │   │   ├── division_employee.py          # affectations division/employee
+│   │   │   └── certification_employee.py     # affectations certification/employee
+│   │   ├── schemas/
+│   │   ├── services/
+│   │   ├── routes/
+│   │   └── __init__.py
+│   │
+│   ├── process/        # gestion des process
+│   │   ├── models/
+│   │   │   ├── process.py            # Liste des process
+│   │   │   ├── process_machine.py    # affectation process/machine
+│   │   │   └── process_step.py       # ordre des étapes du process
+│   │   ├── schemas/
+│   │   ├── services/
+│   │   ├── routes/
+│   │   └── __init__.py
+│   │
+│   ├── maintenance/       # gestion de la maintenance machine
+│   │   ├── models/
+│   │   │   ├── maintenance_request.py  # demande de maintenance
+│   │   │   ├── work_order.py           # ordre de maintenance réel
+│   │   │   ├── work_order_task.py      # étapes internes d’un ordre de maintenance (check-list technique)
+│   │   │   ├── work_order_part.py      # Les pièces détachées utilisées dans l’intervention.
+│   │   │   └── spare_part.py           # Le stock des pièces détachées
+│   │   ├── schemas/
+│   │   ├── services/
+│   │   ├── routes/
+│   │   └── __init__.py
+│   │
+│   ├── production/        # cœur du MES : exécution des ordres de prod
+│   │   ├── models/
+|   │   │   ├── production_order.py       # Ordres de fabrication
+|   │   │   ├── production_task.py        # Étapes concrètes liées à un OF
+|   │   │   ├── production_material.py    # Matières premières consommées
+|   │   │   └── production_output.py      # Résultats (produits finis/semi-finis)
+│   │   ├── schemas/
+│   │   ├── services/
+│   │   ├── routes/
+│   │   └── __init__.py
+|   |
+│   ├── quality/           # suivi qualité et traçabilité
+│   │   ├── models/
+|   |   │    ├── quality_check.py      # Résultats de contrôles qualité
+|   |   │    ├── non_conformity.py     # Non-conformités enregistrées
+|   |   │    └── capa_action.py        # Actions correctives/préventives
+│   │   ├── schemas/
+│   │   ├── services/
+│   │   ├── routes/
+│   │   └── __init__.py
+│   │
+│   ├── inventory/
+│   │   ├── models/
+│   │   │   ├── article.py                # le référentiel produit : tout ce qui peut être stocké ou manipulé
+│   │   │   ├── location.py               # Définit les zones physiques ou logiques de stockage.
+│   │   │   ├── inventory_balance.py      # Stock disponible
+│   │   │   └── inventory_transaction.py  # Mouvements de stock
+│   │   ├── schemas/
+│   │   ├── services/
+│   │   ├── routes/
+│   │   └── __init__.py
+│   │
+│   ├── planning/        # ordonnancement et scheduling
+│   │   ├── models/
+│   │   │   ├── production_schedule.py   # planning global des OF sur une période
+│   │   │   ├── schedule_allocation.py   # allocation d’un OF à une machine / division
+│   │   │   └── shift.py                 # gestion des équipes / créneaux de travail
+│   │   ├── schemas/
+│   │   ├── services/
+│   │   ├── routes/
+│   │   └── __init__.py
+│   │
+│   ├── auth/              # gestion des utilisateurs, login, rôles
+│   │   ├── models/
+│   │   │   ├── user.py
+│   │   │   └── role.py
+│   │   ├── schemas/
+│   │   ├── services/
+│   │   ├── routes/
+│   │   └── __init__.py
+│   │
+│   └── __init__.py
+│
+├── tests/                 # tests unitaires et intégration
+│
+└── run.py                 # entrypoint Flask
+
+2. Logique derrière ce découpage :
+
+    factory = la couche physique (machines, sites, ateliers, process).
+
+    hr = les opérateurs et compétences (affectés à la prod).
+
+    production = le cœur du MES (OF, gammes, suivi d’exécution).
+
+    inventory = la matière et les produits finis (consommés/produits).
+
+    quality = les contrôles et la traçabilité.
+
+    maintenance = la disponibilité des équipements.
+
+    auth = gestion utilisateurs et permissions.
+
+    C’est une organisation très proche d’un vrai MES industriel moderne, et surtout chaque module reste isolé et testable indépendamment.
+
+3. Principes appliqués
+
+    Architecture modulaire par “bounded context” :
+
+    factory/ → la partie technique (usines, divisions, machines).
+
+    hr/ → la partie RH (employés, affectations, compétences).
+
+    auth/ → sécurité (authentification, utilisateurs, permissions).
+    👉 Chaque module contient ses propres modèles, schémas, services et routes.
+
+    Couche services :
+    Toute la logique métier est centralisée dans services/, pas dans les routes.
+    → Les routes sont juste des “adapteurs HTTP” qui appellent les services.
+
+    Schemas Marshmallow :
+    Toujours dans le module correspondant (modules/factory/schemas/...).
+    → Ça garde la cohérence et évite un gros dossier schemas/ à la racine.
+
+    Indépendance technique / RH :
+
+    Le côté technique (factory) est complètement indépendant.
+
+    Le côté RH (hr) se rattache via division_employee qui fait le lien.
+    → Tu peux brancher un autre module plus tard (finance, planning, etc.) sans casser l’existant.

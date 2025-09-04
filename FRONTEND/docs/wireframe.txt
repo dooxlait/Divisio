@@ -1,0 +1,124 @@
+Parfait ! Je te propose un wireframe conceptuel pour ton MES laiterie, orienté Next.js/React moderne. L’idée est de te donner une structure claire et visuelle, avec toutes les fonctionnalités clés inspirées des MES existants.
+
+1️⃣ Structure principale du dashboard
+
+Sidebar (gauche) : navigation principale
+
+Dashboard
+
+Production
+
+Machines
+
+Employés
+
+Qualité
+
+Maintenance
+
+Paramètres / Admin
+
+Header (top) : informations globales
+
+Logo / Nom de l’usine
+
+Notifications / Alertes
+
+Profil utilisateur / Logout
+
+2️⃣ Pages clés et composants
+Dashboard
+
+KPIs principaux :
+
+Production totale aujourd’hui
+
+Déchets / pertes
+
+Taux de conformité qualité
+
+Statut machines (up/down)
+
+Graphiques :
+
+Production par ligne
+
+Température du lait par lot
+
+Rendement vs objectif
+
+Alertes :
+
+Machines nécessitant maintenance
+
+Retards de production
+
+Production
+
+Liste des lots en cours et terminés
+
+Détails par lot :
+
+Date/heure de production
+
+Matières premières utilisées
+
+Contrôle qualité (température, bactériologie, etc.)
+
+Bouton “Créer nouveau lot”
+
+Filtrage par date, ligne, type de produit
+
+Machines
+
+Liste des machines avec statut :
+
+En production / En pause / Maintenance
+
+Historique des pannes
+
+Bouton “Ajouter maintenance”
+
+Indicateurs de performance machine (OEE)
+
+Employés
+
+Liste des opérateurs
+
+Assignation aux lignes de production
+
+Historique des interventions
+
+Suivi des heures / planning
+
+Qualité
+
+Résultats tests qualité par lot
+
+Graphiques tendances
+
+Alertes en cas de non-conformité
+
+Génération de rapports PDF
+
+Maintenance
+
+Calendrier maintenance préventive
+
+Historique interventions
+
+Alertes machines critiques
+
+3️⃣ UX & fonctionnalités modernes
+
+React Query / SWR pour fetcher les données temps réel
+
+TailwindCSS / ShadCN pour composants modernes et responsive
+
+Charts : Recharts ou ApexCharts pour graphiques de performance
+
+Notifications en temps réel : WebSocket ou polling
+
+Mobile-first design : opérateurs sur tablette ou smartphone
+
+Pages modales pour CRUD rapide (ajouter lot, mise à jour machine…)

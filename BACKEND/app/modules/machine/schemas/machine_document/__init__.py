@@ -1,0 +1,1 @@
+# BACKEND\app\modules\machine\schemas\machine_document\__init__.py
