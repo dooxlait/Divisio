@@ -1,0 +1,21 @@
+services:
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+      - ./backend/instance:/app/instance   # persister SQLite
+    env_file:
+      - ./backend/.env
+
+  frontend:
+    build: ./FRONTEND/webapp
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./FRONTEND/webapp:/app
+    depends_on:
+      - backend
