@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   backend:
     build: ./backend
@@ -16,6 +18,8 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./FRONTEND/webapp:/app
+      - ./FRONTEND/webapp:/app   # hot reload
+    environment:
+      - CHOKIDAR_USEPOLLING=true   # permet hot reload sur Windows
     depends_on:
       - backend

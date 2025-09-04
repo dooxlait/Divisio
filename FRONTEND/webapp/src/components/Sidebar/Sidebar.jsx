@@ -7,6 +7,7 @@ export default function Sidebar({ items = [] }) {
     <aside className={styles.sidebar}>
       <div className={styles.logo}>
         <h2>MonApp</h2>
+        <p>MES</p>
       </div>
       <nav className={styles.nav}>
         {items.map((item) => (
