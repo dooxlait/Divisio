@@ -1,10 +1,12 @@
+// FRONTEND\webapp\src\app\identification\page.jsx
+
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import styles from "./page.module.css";
-import Logo from "@/components/logo/logo";
-import LoginForm from "@/components/loginForm/LoginForm";
+import Logo from "@/components/auth/logo/logo";
+import LoginForm from "@/components/auth/loginForm/LoginForm";
 
 export default function IdentificationPage() {
   const router = useRouter();

@@ -1,0 +1,48 @@
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    /* espace entre image et texte */
+}
+
+.logo img {
+    height: 40px;
+    /* fixe la hauteur */
+    width: auto;
+    /* garde les proportions */
+    object-fit: contain;
+    /* pas de déformation */
+    display: block;
+}
+
+.logo h5 {
+    margin: 0;
+    font-size: 1rem;
+    /* taille du texte */
+    font-weight: 800;
+    /* semi-bold */
+    color: var(--color-text, #1E1E2E);
+    line-height: 1.2;
+
+}
+
+.logoLink {
+    text-decoration: none;
+    /* pas de soulignement */
+    color: inherit;
+    /* garde la couleur du texte */
+    display: inline-block;
+    /* sécurise l'affichage */
+    padding: 0.30rem;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.logoLink:hover,
+.logoLink:focus,
+.logoLink:visited,
+.logoLink:active {
+    text-decoration: none;
+    /* empêche le soulignement */
+    color: inherit;
+}

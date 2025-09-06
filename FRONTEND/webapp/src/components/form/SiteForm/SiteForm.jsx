@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
 import styles from "./SiteForm.module.css";
-import InputText from "../form/InputText";
-import Checkbox from "../form/Checkbox";
-import TextArea from "../form/TextArea";
+import InputText from "../../ui/InputText";
+import Checkbox from "../../ui/Checkbox";
+import TextArea from "../../ui/TextArea";
 export default function SiteForm({ formData, onChange, onSubmit }) {
   return (
     <form onSubmit={onSubmit}>

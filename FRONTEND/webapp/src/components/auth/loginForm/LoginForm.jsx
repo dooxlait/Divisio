@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "./LoginForm.module.css";
-import SiteSelect from "@/components/SiteSelect/SiteSelect";
+import SiteSelect from "@/components/form/SiteSelect/SiteSelect";
 import Cookies from "js-cookie";
 
 export default function LoginForm({ onSuccess }) {

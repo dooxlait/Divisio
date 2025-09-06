@@ -1,0 +1,7 @@
+.header {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--color-text, #1E1E2E);
+    line-height: 1.2;
+}

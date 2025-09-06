@@ -1,6 +1,5 @@
 import styles from "./SplashScreen.module.css";
 import useApiCheck from "@/hooks/useApiCheck";
-import { useState, useEffect } from "react";
 import { ShieldQuestionMark } from "lucide-react";
 
 export default function SplashScreen() {

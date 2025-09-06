@@ -16,7 +16,7 @@
     width: 200px;
     height: auto;
     margin-bottom: 2rem;
-    animation: fadeIn 1.5s ease-in-out;
+    animation: fadeIn 0.5s ease-in-out;
 }
 
 .subtitle {

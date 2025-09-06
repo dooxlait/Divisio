@@ -35,9 +35,17 @@ body {
      Couleurs neutres
   ----------------------- */
   --color-bg: #F5F6FA;
+  /* fond principal (pages) */
   --color-surface: #FFFFFF;
+  /* selection*/
+  --color-selected: #F0F2F5;
+  /* surfaces (cards, sidebar, header) */
   --color-border: #E0E0E0;
+  /* bordures, séparateurs */
   --color-shadow: rgba(0, 0, 0, 0.1);
+  /* ombres légères */
+  --color-surface-alt: #F9FAFB;
+  
 
   /* -----------------------
      Texte
