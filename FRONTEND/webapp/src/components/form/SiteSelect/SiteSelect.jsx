@@ -9,8 +9,11 @@ export default function SiteSelect() {
 
   const handleSiteChange = (event) => {
     const siteId = event.target.value;
-    if (siteId) {
-      Cookies.set("site_id", siteId, { expires: 7, path: "/" });
+    const site = data?.payload?.find((s) => s.id.toString() === siteId);
+
+    if (site) {
+      console.log(JSON.stringify(site));
+      Cookies.set("site_id", JSON.stringify(site), { expires: 7, path: "/" });
     }
   };
 
@@ -30,7 +33,7 @@ export default function SiteSelect() {
       required
       onChange={handleSiteChange}
     >
-      <option value="">-- Sélectionner un site</option>
+      <option value="">-- Sélectionner un site --</option>
       {data?.payload?.map((site) => (
         <option key={site.id} value={site.id}>
           {site.name} – {site.city}

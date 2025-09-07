@@ -1,0 +1,19 @@
+.sidebarItem {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: 0.5rem;
+    margin-bottom: 0.2rem;
+    cursor: pointer;
+    /* bonus : indique que c’est cliquable */
+    border-radius: 6px;
+    /* bonus : arrondi léger si hover */
+}
+
+.sidebarItem:hover {
+    background-color: var(--color-surface);
+}
+
+.action {
+    text-align: end;
+}
