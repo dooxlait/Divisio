@@ -28,8 +28,8 @@ export default function Sidebar({ items = [] }) {
         {isFactoryOpen && (
           <div className={styles.subMenu}>
             {/* exemple d’items du sous-menu */}
-            <div className={styles.sidebarItem}>Sites</div>
-            <div className={styles.sidebarItem}>Divisions</div>
+            <div className={styles.sidebarSubItem}>Sites</div>
+            <div className={styles.sidebarSubItem}>Divisions</div>
           </div>
         )}
       </div>
