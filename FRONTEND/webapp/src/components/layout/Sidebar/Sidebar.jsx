@@ -1,38 +1,57 @@
-// Sidebar.jsx
 "use client";
 import { useState } from "react";
 import styles from "./Sidebar.module.css";
-import { LayoutDashboard, Factory } from "lucide-react";
+import { sidebarItems } from "@/config/sidebar.config";
 
-export default function Sidebar({ items = [] }) {
-  const [isFactoryOpen, setIsFactoryOpen] = useState(false);
+export default function Sidebar({ items = sidebarItems }) {
+  const [openMenus, setOpenMenus] = useState({});
 
-  const handleToggleFactoryMenu = () => {
-    setIsFactoryOpen((prev) => !prev);
+  const toggleMenu = (label) => {
+    setOpenMenus((prev) => ({
+      ...prev,
+      [label]: !prev[label],
+    }));
   };
 
   return (
     <aside className={styles.sidebar}>
-      <div className={styles.sidebarContent}>
-        <div className={styles.sidebarItem}>
-          <LayoutDashboard />
-          Dashboard
-        </div>
+      <ul className={styles.tree}>
+        {items.map((item) => {
+          const Icon = item.icon;
+          const isOpen = openMenus[item.label] || false;
 
-        <div className={styles.sidebarItem} onClick={handleToggleFactoryMenu}>
-          <Factory />
-          Factory
-          <span className={styles.action}>{isFactoryOpen ? "▼" : "►"}</span>
-        </div>
+          return (
+            <li key={item.label} className={isOpen ? styles.open : undefined}>
+              <div
+                className={styles.item}
+                onClick={() => item.children && toggleMenu(item.label)}
+              >
+                <Icon />
+                <span className={styles.itemName}>{item.label}</span>
+                {item.children && (
+                  <span className={styles.arrow}>{isOpen ? "▼" : "►"}</span>
+                )}
+              </div>
 
-        {isFactoryOpen && (
-          <div className={styles.subMenu}>
-            {/* exemple d’items du sous-menu */}
-            <div className={styles.sidebarSubItem}>Sites</div>
-            <div className={styles.sidebarSubItem}>Divisions</div>
-          </div>
-        )}
-      </div>
+              {item.children && isOpen && (
+                <ul>
+                  {item.children.map((child) => {
+                    const ChildIcon = child.icon;
+                    return (
+                      <li key={child.label}>
+                        <div className={styles.item}>
+                          <ChildIcon />
+                          <span className={styles.itemName}>{child.label}</span>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </li>
+          );
+        })}
+      </ul>
     </aside>
   );
 }
