@@ -1,0 +1,95 @@
+.mainLayout {
+    background-color: var(--color-bg);
+    padding: var(--space-sm);
+    height: 100vh;
+    display: grid;
+
+    /* Desktop : sidebar fixe + header fixe */
+    grid-template-rows: 75px 1fr;
+    grid-template-columns: 240px 1fr;
+    grid-template-areas:
+        "logo header"
+        "sidebar content";
+
+    grid-column-gap: 0;
+    grid-row-gap: 0;
+}
+
+/* Logo (haut gauche) */
+.mainLayoutLogo {
+    padding: var(--space-sm);
+    background-color: var(--color-surface-alt);
+    border-radius: 0.5rem 0 0 0;
+    grid-area: logo;
+    border-bottom: solid 1px var(--color-border);
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    /* utile si le logo est cliquable */
+    transition: background-color 0.2s ease-in-out;
+}
+
+.mainLayoutLogo :hover {
+    background-color: var(--color-selected);
+}
+
+/* Header (haut droite) */
+.mainLayoutHeader {
+    background-color: var(--color-surface);
+    padding: var(--space-sm);
+    border-radius: 0 0.5rem 0 0;
+    grid-area: header;
+    border-bottom: solid 1px var(--color-border);
+    border-left: solid 1px var(--color-border);
+
+    display: flex;
+    align-items: center;
+}
+
+/* Sidebar (bas gauche) */
+.mainLayoutSidebar {
+    padding: var(--space-sm);
+    background-color: var(--color-surface-alt);
+    grid-area: sidebar;
+    overflow-y: auto;
+    min-height: 0;
+    border-radius: 0 0 0 0.5rem;
+}
+
+/* Contenu principal (bas droite) */
+.mainLayoutContent {
+    padding: var(--space-sm);
+    background-color: var(--color-surface);
+    grid-area: content;
+    overflow-y: auto;
+    min-width: 0;
+    min-height: 0;
+    border-left: solid 1px var(--color-border);
+    border-radius: 0 0 0.5rem 0;
+}
+
+/* ✅ Responsive (mobile < 768px) */
+@media (max-width: 768px) {
+    .mainLayout {
+        grid-template-rows: 60px auto 1fr;
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "logo"
+            "header"
+            "content";
+    }
+
+    .mainLayoutSidebar {
+        display: none;
+        /* cache la sidebar sur mobile */
+    }
+
+    .mainLayoutHeader {
+        border-radius: 0 0 0 0;
+        /* coins propres */
+    }
+
+    .mainLayoutLogo {
+        border-radius: 0.5rem 0.5rem 0 0;
+    }
+}
