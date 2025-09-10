@@ -1,9 +1,11 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import styles from "./Sidebar.module.css";
 import { sidebarItems } from "@/config/sidebar.config";
 
 export default function Sidebar({ items = sidebarItems }) {
+  const router = useRouter();
   const [openMenus, setOpenMenus] = useState({});
 
   const toggleMenu = (label) => {
@@ -11,6 +13,10 @@ export default function Sidebar({ items = sidebarItems }) {
       ...prev,
       [label]: !prev[label],
     }));
+  };
+
+  const handleNavigate = (path) => {
+    router.push(path);
   };
 
   return (
@@ -39,7 +45,10 @@ export default function Sidebar({ items = sidebarItems }) {
                     const ChildIcon = child.icon;
                     return (
                       <li key={child.label}>
-                        <div className={styles.item}>
+                        <div
+                          className={styles.item}
+                          onClick={() => handleNavigate(child.path)}
+                        >
                           <ChildIcon />
                           <span className={styles.itemName}>{child.label}</span>
                         </div>
