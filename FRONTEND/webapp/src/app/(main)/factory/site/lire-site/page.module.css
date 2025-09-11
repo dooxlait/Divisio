@@ -1,0 +1,63 @@
+.container {
+    width: 50%;
+    height: 50%;
+}
+
+/* Header de la carte */
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    /* gris clair */
+    color: #374151;
+    /* gris foncé */
+}
+
+.cardHeading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cardHeading svg {
+    flex-shrink: 0;
+}
+
+/* Zone d’édition */
+.editMode {
+    display: flex;
+    align-items: center;
+}
+
+/* Bouton édition */
+.buttonEdit {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: 1px solid #d1d5db;
+    /* gris clair */
+    border-radius: 6px;
+    background-color: #f9fafb;
+    /* gris très clair */
+    color: #374151;
+    /* gris foncé */
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.buttonEdit:hover {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+}
+
+.buttonEdit svg {
+    width: 16px;
+    height: 16px;
+}

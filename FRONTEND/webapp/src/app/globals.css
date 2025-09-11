@@ -171,6 +171,7 @@ body {
   width: 100%;
   border-collapse: collapse;
   background-color: var(--color-surface);
+  border: none;
 }
 
 .table th,
@@ -182,6 +183,18 @@ body {
 .table th {
   background-color: var(--color-bg);
   color: var(--color-text-primary);
+  text-align: left;
+}
+
+.table-light {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.table-light th,
+.table-light td {
+  border: none;
+  padding: 8px;
   text-align: left;
 }
 

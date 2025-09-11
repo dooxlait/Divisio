@@ -30,7 +30,11 @@ export default function Sidebar({ items = sidebarItems }) {
             <li key={item.label} className={isOpen ? styles.open : undefined}>
               <div
                 className={styles.item}
-                onClick={() => item.children && toggleMenu(item.label)}
+                onClick={() =>
+                  item.children
+                    ? toggleMenu(item.label)
+                    : handleNavigate(item.path)
+                }
               >
                 <Icon />
                 <span className={styles.itemName}>{item.label}</span>

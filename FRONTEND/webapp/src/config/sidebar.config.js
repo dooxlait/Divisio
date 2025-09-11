@@ -19,8 +19,8 @@ export const sidebarItems = [
     label: "Factory",
     icon: Factory,
     children: [
-      { label: "Site", icon: Blocks, path: "/factory/site" },       // 👈 ajouté
-      { label: "Division", icon: LayoutList, path: "/factory/division" },
+      { label: "Site", icon: Blocks, path: "/factory/site" }, // 👈 ajouté
+      { label: "Division", icon: LayoutList, path: "/factory/divisions" },
     ],
   },
   {
@@ -34,8 +34,6 @@ export const sidebarItems = [
   {
     label: "Technical",
     icon: VectorSquare,
-    children: [
-      { label: "Machines", icon: Cpu, path: "/technical/machines" },
-    ],
+    children: [{ label: "Machines", icon: Cpu, path: "/technical/machines" }],
   },
 ];
