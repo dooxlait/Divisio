@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { axiosInstance } from "../services/AxiosInstance";
 
 export default function useApi({ endpoint }) {
-  const [status, setStatus] = useState("loading"); // "loading" | "ok" | "error"
+  const [status, setStatus] = useState("loading");
   const [data, setData] = useState(null);
 
   useEffect(() => {

@@ -1,31 +1,33 @@
 "use client";
-import styles from "./page.module.css";
-import { useRouter } from "next/navigation";
 
-import Spinner from "@/components/ui/Spinner";
+import { useState } from "react";
+import LoadingButton from "@/components/ui/LoadingButton";
 
 export default function SitePage() {
-  const router = useRouter();
+  const [loadingButton, setLoadingButton] = useState(null); // null | "creer" | "lire"
 
   return (
-    <div className={styles.container}>
-      <h4>Que souhaitez vous faire ?</h4>
+    <div className="card-global">
+      <h4>Que souhaitez-vous faire ?</h4>
       <p>Choisissez une option :</p>
 
-      <button
-        className={styles.button}
-        onClick={() => router.push("/factory/site/creer-site")}
+      <LoadingButton
+        path="/factory/site/creer-site"
+        buttonKey="creer"
+        loadingButton={loadingButton}
+        setLoadingButton={setLoadingButton}
       >
         Créer un nouveau site
-      </button>
+      </LoadingButton>
 
-      <button
-        className={styles.button}
-        onClick={() => router.push("/factory/site/lire-site")}
+      <LoadingButton
+        path="/factory/site/lire-site"
+        buttonKey="lire"
+        loadingButton={loadingButton}
+        setLoadingButton={setLoadingButton}
       >
         Lire les informations du site
-      </button>
-
+      </LoadingButton>
     </div>
   );
 }
