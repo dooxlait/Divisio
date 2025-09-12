@@ -2,6 +2,8 @@
 import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
 
+import Spinner from "@/components/ui/Spinner";
+
 export default function SitePage() {
   const router = useRouter();
 
@@ -23,6 +25,7 @@ export default function SitePage() {
       >
         Lire les informations du site
       </button>
+
     </div>
   );
 }
