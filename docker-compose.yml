@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   backend:
     build: ./backend
@@ -6,7 +8,7 @@ services:
       - "5000:5000"
     volumes:
       - ./backend:/app
-      - ./backend/instance:/app/instance   # persister SQLite
+      - ./backend/instance:/app/instance
     env_file:
       - ./backend/.env
 
@@ -15,11 +17,15 @@ services:
     container_name: frontend
     ports:
       - "3000:3000"
-    volumes:
-      - ./FRONTEND/webapp:/app          # ton code
-      - /app/node_modules               # garde node_modules du conteneur
-    environment:
-      - CHOKIDAR_USEPOLLING=true        # hot reload sur Windows
+    command: npm run dev   # mode dev pour hot reload
+    develop:
+      watch:
+        - action: sync
+          path: ./FRONTEND/webapp
+          target: /app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: ./FRONTEND/webapp/package.json
     depends_on:
       - backend
-
