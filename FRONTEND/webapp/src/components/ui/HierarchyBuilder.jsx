@@ -1,7 +1,7 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { buildHierarchy } from "@/helpers/buildHierarchy";
-
+import { useSession } from "@/context/SessionContext";
 function TreeNode({ node, level = 0, isLast = true }) {
   const [open, setOpen] = useState(true); // état ouvert/fermé
 
@@ -83,10 +83,24 @@ function TreeNode({ node, level = 0, isLast = true }) {
 
 export default function HierarchyBuilder({ data }) {
   const hierarchy = useMemo(() => buildHierarchy(data.payload), [data]);
-
+  const rawSession = useSession();
+  const [session, setSession] = useState(null);
+  console.log(session);
+  useEffect(() => {
+    if (rawSession) {
+      try {
+        setSession(JSON.parse(rawSession));
+      } catch (err) {
+        console.error("Erreur de parsing du cookie session :", err);
+        setSession(null);
+      }
+    } else {
+      setSession(null);
+    }
+  }, [rawSession]);
   return (
-    <div className="tree-container">
-      <h3>Arborescence</h3>
+    <div className="tree-container card">
+      <h4>{session?.name}</h4>
       <ul className="tree">
         {hierarchy.map((root, idx) => (
           <TreeNode
