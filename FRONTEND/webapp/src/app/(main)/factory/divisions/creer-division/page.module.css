@@ -1,0 +1,12 @@
+
+.visualCard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px; /* espacement entre les minicards */
+  align-items: flex-start; /* aligne les enfants en haut */
+  width: fit-content; /* prend juste la taille des enfants */
+  max-width: 100%; /* empêche de dépasser le conteneur parent */
+  margin-top: 24px; /* espacement avec le contenu du dessus */
+}
