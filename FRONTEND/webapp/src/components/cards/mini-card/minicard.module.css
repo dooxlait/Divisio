@@ -73,3 +73,9 @@
 .minicard:hover .content span:last-child {
     color: white;
 }
+
+.minicard.active {
+    border-color: var(--color-primary);
+    background-color: var(--color-primary-light);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}

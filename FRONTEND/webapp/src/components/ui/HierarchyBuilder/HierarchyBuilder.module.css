@@ -1,0 +1,12 @@
+.treeContainer {
+    max-width: 400px;
+    overflow-x: auto;
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.tree {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}

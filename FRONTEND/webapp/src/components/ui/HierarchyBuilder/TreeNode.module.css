@@ -1,0 +1,50 @@
+.treeItem {
+    position: relative;
+    padding-left: 26px;
+    list-style: none;
+}
+
+/* Ligne verticale */
+.treeItem::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 16px;
+    width: 1px;
+    height: 100%;
+    border-left: 1px solid #aaa;
+}
+
+/* Si c'est le dernier enfant → ligne courte */
+.treeItem:last-child::before {
+    height: 12px;
+}
+
+/* Ligne horizontale vers le nœud */
+.nodeLabel::before {
+    content: "";
+    position: absolute;
+    top: 12px;
+    left: -10px;
+    width: 10px;
+    height: 1px;
+    border-top: 1px solid #aaa;
+}
+
+.nodeLabel {
+    position: relative;
+    padding: 4px 8px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.nodeLabel:hover {
+    background-color: #f0f0f0;
+}
+
+.toggle {
+    display: inline-block;
+    width: 16px;
+    text-align: center;
+    margin-right: 4px;
+}

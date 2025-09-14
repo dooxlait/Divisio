@@ -1,7 +1,7 @@
 "use client";
 import styles from "./page.module.css";
 import useApi from "@/hooks/useApi";
-import HierarchyBuilder from "@/components/ui/HierarchyBuilder";
+import HierarchyBuilder from "@/components/ui/HierarchyBuilder/HierarchyBuilder";
 
 export default function LireDivisionPage() {
   const { status, data } = useApi({ endpoint: "factory/divisions" });
