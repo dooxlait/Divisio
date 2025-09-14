@@ -370,3 +370,24 @@ a:hover,
 .card-global svg {
   margin-right: var(--space-xs);
 }
+
+/* ========================
+   ERREURS & MESSAGES FORM
+======================== */
+.form-error {
+  color: var(--color-error);
+  font-size: 0.875rem;
+  /* 14px */
+  margin-top: var(--space-xs);
+}
+
+/* ========================
+   CARTE VISUELLE / MINI CARD
+======================== */
+.visual-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+

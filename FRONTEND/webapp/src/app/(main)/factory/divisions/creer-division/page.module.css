@@ -9,4 +9,15 @@
   width: fit-content; /* prend juste la taille des enfants */
   max-width: 100%; /* empêche de dépasser le conteneur parent */
   margin-top: 24px; /* espacement avec le contenu du dessus */
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.error {
+  color: #d93025;
+  /* rouge Google-like */
+  font-size: 0.9rem;
+  margin-top: 4px;
+  margin-bottom: 0;
+  font-weight: 500;
 }

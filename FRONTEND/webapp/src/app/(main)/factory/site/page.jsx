@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import LoadingButton from "@/components/ui/LoadingButton";
+import LoadingButton from "@/components/ui/Button/LoadingNavigateButton";
 
 export default function SitePage() {
   const [loadingButton, setLoadingButton] = useState(null); // null | "creer" | "lire"

@@ -10,3 +10,29 @@
     margin: 0;
     padding: 0;
 }
+
+.backButton {
+    margin-bottom: 8px;
+    padding: 4px 8px;
+    border: 1px solid var(--color-border, #ccc);
+    background: var(--color-light, #f9f9f9);
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.backButton:hover {
+    background: var(--color-hover, #eee);
+}
+
+.selectionHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.selectedLabel {
+    font-weight: bold;
+    color: var(--color-primary, #333);
+}

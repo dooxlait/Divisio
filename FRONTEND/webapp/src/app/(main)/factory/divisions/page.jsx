@@ -2,7 +2,7 @@
 "use client";
 import styles from "./page.module.css";
 import { useState } from "react";
-import LoadingButton from "@/components/ui/LoadingButton";
+import LoadingButton from "@/components/ui/Button/LoadingNavigateButton";
 export default function Division() {
   const [loadingButton, setLoadingButton] = useState(null);
 
