@@ -22,6 +22,7 @@ export default function LoadingButton({
       className={className}
       onClick={handleClick}
       disabled={loadingButton !== null}
+      style={{ minWidth: "250px" }}
     >
       {children}
       {loadingButton === buttonKey && <ClipLoader color="#fff" size={20} />}

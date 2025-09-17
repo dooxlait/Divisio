@@ -6,6 +6,12 @@ import {
   CircleUserRound,
   VectorSquare,
   Cpu,
+  Apple,
+  Milk,
+  BookCopy,
+  TrendingUpDown,
+  ScanQrCode,
+  Boxes,
 } from "lucide-react";
 
 export const sidebarItems = [
@@ -35,5 +41,36 @@ export const sidebarItems = [
     label: "Technical",
     icon: VectorSquare,
     children: [{ label: "Machines", icon: Cpu, path: "/technical/machines" }],
+  },
+  {
+    label: "Products",
+    icon: Apple,
+    children: [
+      {
+        label: "Matières Premières",
+        icon: Milk,
+        path: "/products/raw-material",
+      },
+      {
+        label: "Familles Produits",
+        icon: BookCopy,
+        path: "/products/type-products",
+      },
+      {
+        label: "Variantes Familles Produits",
+        icon: TrendingUpDown,
+        path: "/products/variants-products",
+      },
+      {
+        label: "Formats Emballages",
+        icon: ScanQrCode,
+        path: "/products/packaging-formats",
+      },
+      {
+        label: "Palettes",
+        icon: Boxes,
+        path: "/products/pallets",
+      },
+    ],
   },
 ];
