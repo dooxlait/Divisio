@@ -2,11 +2,9 @@
 
 from flask import Blueprint, request, jsonify
 from app.modules.product.services.palette_service import PaletteService
-from app.modules.product.schema.palette.PaletteSchema import (
-    PaletteSchema,
-    PaletteCreateSchema,
-    PaletteUpdateSchema,
-)
+from app.modules.product.schema.palette.PaletteSchema import PaletteSchema
+from app.modules.product.schema.palette.PaletteCreateSchema import PaletteCreateSchema
+from app.modules.product.schema.palette.PaletteUpdateSchema import PaletteUpdateSchema
 
 palette_bp = Blueprint("palette_bp", __name__, url_prefix="/palettes")
 service = PaletteService()

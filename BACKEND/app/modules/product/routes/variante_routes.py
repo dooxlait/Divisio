@@ -2,11 +2,9 @@
 
 from flask import Blueprint, request, jsonify
 from app.modules.product.services.variante_service import VarianteService
-from app.modules.product.schema.variante.VarianteSchema import (
-    VarianteSchema,
-    VarianteCreateSchema,
-    VarianteUpdateSchema,
-)
+from app.modules.product.schema.variante.VarianteSchema import VarianteSchema
+from app.modules.product.schema.variante.VarianteCreateSchema import VarianteCreateSchema
+from app.modules.product.schema.variante.VarianteUpdateSchema import VarianteUpdateSchema
 
 variante_bp = Blueprint("variante_bp", __name__, url_prefix="/variantes")
 service = VarianteService()

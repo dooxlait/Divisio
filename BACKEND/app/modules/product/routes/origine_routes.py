@@ -2,11 +2,9 @@
 
 from flask import Blueprint, request, jsonify
 from app.modules.product.services.origine_service import OrigineService
-from app.modules.product.schema.origine.OrigineSchema import (
-    OrigineSchema,
-    OrigineCreateSchema,
-    OrigineUpdateSchema,
-)
+from app.modules.product.schema.origine.OrigineSchema import  OrigineSchema
+from app.modules.product.schema.origine.OrigineCreateSchema import OrigineCreateSchema
+from app.modules.product.schema.origine.OrigineUpdateSchema import OrigineUpdateSchema
 
 origine_bp = Blueprint("origine_bp", __name__, url_prefix="/origines")
 service = OrigineService()

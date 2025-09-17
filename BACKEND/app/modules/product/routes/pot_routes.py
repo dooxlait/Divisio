@@ -2,11 +2,10 @@
 
 from flask import Blueprint, request, jsonify
 from app.modules.product.services.pot_service import PotService
-from app.modules.product.schema.pot.PotSchema import (
-    PotSchema,
-    PotCreateSchema,
-    PotUpdateSchema,
-)
+from app.modules.product.schema.pot.PotSchema import PotSchema
+from app.modules.product.schema.pot.PotCreateSchema import PotCreateSchema
+from app.modules.product.schema.pot.PotUpdateSchema import PotUpdateSchema
+
 
 pot_bp = Blueprint("pot_bp", __name__, url_prefix="/pots")
 service = PotService()

@@ -2,11 +2,9 @@
 
 from flask import Blueprint, request, jsonify
 from app.modules.product.services.opercule_service import OperculeService
-from app.modules.product.schema.opercule.OperculeSchema import (
-    OperculeSchema,
-    OperculeCreateSchema,
-    OperculeUpdateSchema,
-)
+from app.modules.product.schema.opercule.OperculeSchema import OperculeSchema
+from app.modules.product.schema.opercule.OperculeCreateSchema import OperculeCreateSchema
+from app.modules.product.schema.opercule.OperculeUpdateSchema import OperculeUpdateSchema
 
 opercule_bp = Blueprint("opercule_bp", __name__, url_prefix="/opercules")
 service = OperculeService()

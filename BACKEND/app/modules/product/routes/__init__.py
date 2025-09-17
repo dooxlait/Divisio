@@ -3,7 +3,7 @@
 
 # Import des blueprints
 from app.modules.product.routes.carton_routes import carton_bp
-from app.modules.product.routes.carton_palette_routes import produit_carton_bp as carton_palette_bp
+from app.modules.product.routes.carton_palette_routes import carton_palette_bp
 from app.modules.product.routes.coiffe_routes import coiffe_bp
 from app.modules.product.routes.format_routes import format_bp
 from app.modules.product.routes.opercule_routes import opercule_bp

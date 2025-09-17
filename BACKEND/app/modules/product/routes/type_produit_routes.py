@@ -2,11 +2,9 @@
 
 from flask import Blueprint, request, jsonify
 from app.modules.product.services.type_produit_service import TypeProduitService
-from app.modules.product.schema.type_produit.TypeProduitSchema import (
-    TypeProduitSchema,
-    TypeProduitCreateSchema,
-    TypeProduitUpdateSchema,
-)
+from app.modules.product.schema.type_produit.TypeProduitSchema import TypeProduitSchema
+from app.modules.product.schema.type_produit.TypeProduitCreateSchema import TypeProduitCreateSchema
+from app.modules.product.schema.type_produit.TypeProduitUpdateSchema import TypeProduitUpdateSchema
 
 type_produit_bp = Blueprint("type_produit_bp", __name__, url_prefix="/types-produit")
 service = TypeProduitService()

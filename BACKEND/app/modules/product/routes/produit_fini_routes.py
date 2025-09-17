@@ -2,11 +2,9 @@
 
 from flask import Blueprint, request, jsonify
 from app.modules.product.services.produit_fini_service import ProduitFiniService
-from app.modules.product.schema.produit_fini.ProduitFiniSchema import (
-    ProduitFiniSchema,
-    ProduitFiniCreateSchema,
-    ProduitFiniUpdateSchema,
-)
+from app.modules.product.schema.produit_fini.ProduitFiniSchema import ProduitFiniSchema
+from app.modules.product.schema.produit_fini.ProduitFiniCreateSchema import ProduitFiniCreateSchema
+from app.modules.product.schema.produit_fini.ProduitFiniUpdateSchema import ProduitFiniUpdateSchema
 
 produit_fini_bp = Blueprint("produit_fini_bp", __name__, url_prefix="/produits-fini")
 service = ProduitFiniService()

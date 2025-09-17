@@ -2,11 +2,9 @@
 
 from flask import Blueprint, request, jsonify
 from app.modules.product.services.format_service import FormatService
-from app.modules.product.schema.format.FormatSchema import (
-    FormatSchema,
-    FormatCreateSchema,
-    FormatUpdateSchema,
-)
+from app.modules.product.schema.format.FormatSchema import FormatSchema
+from app.modules.product.schema.format.FormatCreateSchema import FormatCreateSchema
+from app.modules.product.schema.format.FormatUpdateSchema import FormatUpdateSchema
 
 format_bp = Blueprint("format_bp", __name__, url_prefix="/formats")
 service = FormatService()

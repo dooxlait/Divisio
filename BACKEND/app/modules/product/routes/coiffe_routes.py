@@ -2,11 +2,9 @@
 
 from flask import Blueprint, request, jsonify
 from app.modules.product.services.coiffe_service import CoiffeService
-from app.modules.product.schema.coiffe.CoiffeSchema import (
-    CoiffeSchema,
-    CoiffeCreateSchema,
-    CoiffeUpdateSchema,
-)
+from app.modules.product.schema.coiffe.CoiffeSchema import CoiffeSchema
+from app.modules.product.schema.coiffe.CoiffeCreateSchema import CoiffeCreateSchema
+from app.modules.product.schema.coiffe.CoiffeUpdateSchema import CoiffeUpdateSchema
 
 coiffe_bp = Blueprint("coiffe_bp", __name__, url_prefix="/coiffes")
 service = CoiffeService()

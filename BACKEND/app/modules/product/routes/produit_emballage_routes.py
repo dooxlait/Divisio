@@ -2,11 +2,9 @@
 
 from flask import Blueprint, request, jsonify
 from app.modules.product.services.produit_emballage_service import ProduitEmballageService
-from app.modules.product.schema.produit_emballage.ProduitEmballageSchema import (
-    ProduitEmballageSchema,
-    ProduitEmballageCreateSchema,
-    ProduitEmballageUpdateSchema,
-)
+from app.modules.product.schema.produit_emballage.ProduitEmballageSchema import ProduitEmballageSchema
+from app.modules.product.schema.produit_emballage.ProduitEmballageCreateSchema import ProduitEmballageCreateSchema
+from app.modules.product.schema.produit_emballage.ProduitEmballageUpdateSchema import ProduitEmballageUpdateSchema
 
 produit_emballage_bp = Blueprint("produit_emballage_bp", __name__, url_prefix="/produits-emballage")
 service = ProduitEmballageService()

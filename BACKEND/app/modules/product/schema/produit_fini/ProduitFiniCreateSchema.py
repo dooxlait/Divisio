@@ -3,7 +3,7 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow import pre_load
 from app.core.extensions import db
-from BACKEND.app.modules.product.models.produit_fini import ProduitFini
+from app.modules.product.models.produit_fini import ProduitFini
 
 class ProduitFiniCreateSchema(SQLAlchemyAutoSchema):
     class Meta:

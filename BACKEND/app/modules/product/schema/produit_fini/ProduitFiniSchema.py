@@ -2,7 +2,7 @@
 
 from marshmallow import fields
 from app.common.base.base_schema import BaseSchema
-from BACKEND.app.modules.product.models.produit_fini import ProduitFini
+from app.modules.product.models.produit_fini import ProduitFini
 
 class ProduitFiniSchema(BaseSchema):
     # Relations
