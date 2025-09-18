@@ -1,0 +1,39 @@
+.container {
+    display: flex;
+    justify-content: center;
+    /* centre horizontalement */
+    align-items: flex-start;
+    /* commence en haut */
+    height: 100vh;
+    /* prend toute la hauteur de la page */
+    padding: 20px;
+}
+
+.card-global {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 500px;
+    /* limite la largeur */
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+
+.formcontrol {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.formcontrol input {
+    padding: 8px 12px;
+    font-size: 16px;
+    width: 100%;
+    /* occupe toute la largeur disponible */
+    box-sizing: border-box;
+}

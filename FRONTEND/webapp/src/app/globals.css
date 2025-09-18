@@ -391,3 +391,72 @@ a:hover,
   margin-top: var(--space-sm);
 }
 
+/* ========================
+   CARTE FORMULAIRE
+======================== */
+.form-card {
+  border: 1px solid #ccc;
+  /* Bord clair et discret */
+  border-radius: 8px;
+  /* Coins arrondis pour un style doux */
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  /* Plus d’espace pour respirer */
+  max-width: 400px;
+  /* Taille confortable pour un formulaire */
+  background-color: #fff;
+  /* Fond blanc propre */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  /* Légère ombre pour profondeur */
+  gap: 1rem;
+  /* Espace entre les éléments */
+  font-family: Arial, sans-serif;
+}
+
+.form-card label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  display: block;
+  color: #333;
+}
+
+.form-card input,
+.form-card select,
+.form-card textarea {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-card input:focus,
+.form-card select:focus,
+.form-card textarea:focus {
+  border-color: #007bff;
+  /* Couleur au focus */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+  outline: none;
+}
+
+.form-card button {
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.form-card button:hover {
+  background-color: #0056b3;
+}
+
+.form-card .form-group {
+  display: flex;
+  flex-direction: column;
+}
