@@ -17,17 +17,9 @@ export default function CreateRawMaterial() {
 
   return (
     <div className={styles.container}>
-      <div className="form-card">
-        <h4 className="">
-          <FolderPlus style={{ marginRight: "8px" }} />
-          Enregistrement d&apos;une Matière Première
-        </h4>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className={styles.formcontrol}>
-            <label htmlFor="nom">Nom : </label>
-            <input type="text" name="nom" id="nom" />
-          </div>
-        </form>
+      <div className={styles.title}>
+        <FolderPlus />
+        <span>Enregistrement d'une matière première</span>
       </div>
     </div>
   );

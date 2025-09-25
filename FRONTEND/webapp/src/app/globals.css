@@ -403,7 +403,7 @@ a:hover,
   flex-direction: column;
   padding: 1.5rem;
   /* Plus d’espace pour respirer */
-  max-width: 400px;
+  max-width: 800px;
   /* Taille confortable pour un formulaire */
   background-color: #fff;
   /* Fond blanc propre */
@@ -419,6 +419,10 @@ a:hover,
   margin-bottom: 0.3rem;
   display: block;
   color: #333;
+}
+
+.form-field {
+  color: #6b7280;
 }
 
 .form-card input,
