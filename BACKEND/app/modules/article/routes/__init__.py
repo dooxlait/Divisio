@@ -1,0 +1,1 @@
+from .articletypes_routes import articletype_bp
