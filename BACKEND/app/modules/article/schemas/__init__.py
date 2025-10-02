@@ -1,0 +1,1 @@
+from .articles_types import articletype_schema_creation
