@@ -1,11 +1,11 @@
 from flask import Blueprint, request
-from app.modules.article.service import readallarticletype, writearticletype
+from app.modules.article.service.articletype_service import readallarticletype, writearticletype
 from app.modules.article.schemas import articletype_schema_creation
 from app.common.response.response import success_response, error_response
 
 articletype_bp = Blueprint('articletype', __name__, url_prefix="/articletype")
 
-@articletype_bp.routes("/articletype", methods=['GET'])
+@articletype_bp.route("/articletype", methods=['GET'])
 def getArticleType_route():
     articlestypes = readallarticletype()
     schemas = articletype_schema_creation(many=True)
@@ -18,7 +18,7 @@ def getArticleType_route():
         return error_response("Aucun site trouvé", 404)
 
 
-@articletype_bp.routes('/articletype', methods=['POST'])
+@articletype_bp.route('/articletype', methods=['POST'])
 def readArticleType_route():
     data = request.get_json()
 

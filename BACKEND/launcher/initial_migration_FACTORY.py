@@ -7,6 +7,7 @@ from .launcher_service import insert_if_empty
 # Import des modèles et schémas
 from app.modules.factory.models.site import Site
 from app.modules.factory.schemas.site.SiteCreateSchema import SiteCreateSchema
+
 from app.modules.factory.models.division import Division
 from app.modules.factory.schemas.division.DivisionCreateSchema import DivisionCreateSchema
 
@@ -15,6 +16,9 @@ from app.modules.hr.schemas.employee import EmployeeCreateSchema
 
 from app.modules.machine.models import Machine
 from app.modules.machine.schemas.machine import MachineCreateSchema
+
+from app.modules.article.models import ArticleType
+from app.modules.article.schemas.articles_types import ArticleTypeCreateSchema
 
 app = create_app()
 
@@ -148,6 +152,31 @@ with app.app_context():
     all_employee = Employee.query.all()
 
     employee_ids = [e.id for e in Employee.query.with_entities(Employee.id)]
+
+    # --- ARTICLE TYPE
+    articletype_data = [
+        { "designation": "MATIÈRES PREMIÈRES", "description": "Matières premières entrant dans la fabrication des produits." },
+        { "designation": "PRODUIT FINI", "description": "Produit fini, emballé et prêt à être expédié." },
+        { "designation": "EMBALLAGE PRIMAIRE", "description": "Emballage directement en contact avec le produit." },
+        { "designation": "EMBALLAGE SECONDAIRE", "description": "Emballage extérieur destiné à regrouper plusieurs produits emballés." },
+        { "designation": "PRODUITS SEMI-FINIS", "description": "Produits nécessitant encore une ou plusieurs opérations avant d'être terminés." },
+        { "designation": "MATIÈRES PREMIÈRES CONSOMMABLES", "description": "Matières utilisées dans la production et consommées pendant le processus (ex : produits chimiques, colles, huiles)." },
+        { "designation": "PRODUITS EN COURS", "description": "Produits en phase de fabrication, nécessitant encore des opérations avant de devenir des produits finis." },
+        { "designation": "PIÈCES DE RECHANGE", "description": "Composants utilisés pour la maintenance ou la réparation des équipements." },
+        { "designation": "OUTILS DE PRODUCTION", "description": "Outils et équipements nécessaires à la production (ex : moules, gabarits, machines)." },
+        { "designation": "COMPOSANTS", "description": "Éléments qui seront assemblés pour constituer un produit fini ou semi-fini." },
+        { "designation": "RETURNS", "description": "Produits retournés par les clients, nécessitant une inspection avant d’être réintégrés dans le stock." },
+        { "designation": "PRODUITS DE MAINTENANCE", "description": "Produits utilisés pour la maintenance et l'entretien des équipements de production." },
+        { "designation": "ACCESSOIRES D'EMBALLAGE", "description": "Matériaux d'emballage utilisés pour l'assemblage ou l'étiquetage des produits finis." }
+    ]
+
+    try:
+        success = insert_if_empty(ArticleType, ArticleTypeCreateSchema(), articletype_data, "Articles Types", False)
+        modifications = modifications or success
+    except Exception as e:
+        print(f"[ERREUR] Échec de l'insertion des sites : {e}")
+        import traceback
+        traceback.print_exc()
 
     
 
