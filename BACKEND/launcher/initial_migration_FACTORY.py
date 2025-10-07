@@ -20,6 +20,9 @@ from app.modules.machine.schemas.machine import MachineCreateSchema
 from app.modules.article.models import ArticleType
 from app.modules.article.schemas.articles_types import ArticleTypeCreateSchema
 
+from app.modules.article.models import Article
+from app.modules.article.schemas.articles import ArticleSchema
+
 app = create_app()
 
 print("[COLD START] - Peuplement de la base de données")
@@ -174,14 +177,28 @@ with app.app_context():
         success = insert_if_empty(ArticleType, ArticleTypeCreateSchema(), articletype_data, "Articles Types", False)
         modifications = modifications or success
     except Exception as e:
-        print(f"[ERREUR] Échec de l'insertion des sites : {e}")
+        print(f"[ERREUR] Échec de l'insertion des articles types : {e}")
         import traceback
         traceback.print_exc()
 
     
+    # --- ARTICLE
+    code_type_article = ArticleType.query.filter_by(designation="PRODUIT FINI").first()
+    article_data = [
+        {
+            "nom_article": "BIOCOOP - GREC BREBIS 2x150gr",  # String
+            "code_externe": "12345",  # String (les guillemets indiquent que c'est une chaîne)
+            "type_id": code_type_article.id  # Assure-toi que c'est bien un Integer
+        }
+    ]
 
-
-
+    try:
+        success = insert_if_empty(Article, ArticleSchema(), article_data, "Article", False)
+        modifications = modifications or success
+    except Exception as e:
+        print(f"[ERREUR] Échec de l'insertion des articles : {e}")
+        import traceback
+        traceback.print_exc()
 
 
     if modifications:
