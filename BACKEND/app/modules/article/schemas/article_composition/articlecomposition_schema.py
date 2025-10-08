@@ -4,7 +4,7 @@ from app.core.extensions import db
 
 class ArticleCompositionSchema(SQLAlchemyAutoSchema):
     class Meta:
-        model: ArticleComposition
+        model = ArticleComposition
         load_instance = True
         include_fk = True
         sqla_session = db.session

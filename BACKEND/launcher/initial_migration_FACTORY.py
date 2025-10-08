@@ -23,6 +23,9 @@ from app.modules.article.schemas.articles_types import ArticleTypeCreateSchema
 from app.modules.article.models import Article
 from app.modules.article.schemas.articles import ArticleSchema
 
+from app.modules.article.models import ArticleComposition
+from app.modules.article.schemas import ArticleCompositionSchema
+
 app = create_app()
 
 print("[COLD START] - Peuplement de la base de données")
@@ -183,12 +186,23 @@ with app.app_context():
 
     
     # --- ARTICLE
-    code_type_article = ArticleType.query.filter_by(designation="PRODUIT FINI").first()
+    code_type_article_PF = ArticleType.query.filter_by(designation="PRODUIT FINI").first()
+    code_type_article_EMBP = ArticleType.query.filter_by(designation="EMBALLAGE PRIMAIRE").first()
     article_data = [
         {
             "nom_article": "BIOCOOP - GREC BREBIS 2x150gr",  # String
             "code_externe": "12345",  # String (les guillemets indiquent que c'est une chaîne)
-            "type_id": code_type_article.id  # Assure-toi que c'est bien un Integer
+            "type_id": code_type_article_PF.id  # Assure-toi que c'est bien un Integer
+        },
+        {
+            "nom_article": "POT 150cc DIA 95 GREINER",  # String
+            "code_externe": "1345",  # String (les guillemets indiquent que c'est une chaîne)
+            "type_id": code_type_article_EMBP.id  # Assure-toi que c'est bien un Integer
+        },
+        {
+            "nom_article": "OPERCULE SEDA IMPRIME",  # String
+            "code_externe": "13",  # String (les guillemets indiquent que c'est une chaîne)
+            "type_id": code_type_article_EMBP.id  # Assure-toi que c'est bien un Integer
         }
     ]
 
@@ -197,6 +211,23 @@ with app.app_context():
         modifications = modifications or success
     except Exception as e:
         print(f"[ERREUR] Échec de l'insertion des articles : {e}")
+        import traceback
+        traceback.print_exc()
+
+    # --- ARTICLE COMPOSE
+    PF = Article.query.filter_by(nom_article = "BIOCOOP - GREC BREBIS 2x150gr").first()
+    EMB_PRIMAIRE = Article.query.filter_by(nom_article = "POT 150cc DIA 95 GREINER").first()
+    OPERCULES = Article.query.filter_by(nom_article = "OPERCULE SEDA IMPRIME").first()
+
+    composition_data = [
+        {"parent_article_id": PF.id, "composant_article_id": EMB_PRIMAIRE.id, "quantite": 2},
+        {"parent_article_id": PF.id, "composant_article_id": OPERCULES.id, "quantite": 2} ,
+    ]
+    try:
+        success = insert_if_empty(ArticleComposition, ArticleCompositionSchema(), composition_data, "Composition", False)
+        modifications = modifications or success
+    except Exception as e:
+        print(f"[ERREUR] Échec de l'association des articles : {e}")
         import traceback
         traceback.print_exc()
 

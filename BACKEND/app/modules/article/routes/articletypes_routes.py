@@ -1,3 +1,5 @@
+# BACKEND\app\modules\article\routes\articletypes_routes.py
+
 from flask import Blueprint, request
 from app.modules.article.service.articletype_service import readallarticletype, writearticletype
 from app.modules.article.schemas.articles_types import ArticleTypeCreateSchema
@@ -15,7 +17,7 @@ def getArticleType_route():
             message="Liste des types articles récupérée avec succès"
         )
     else:
-        return error_response("Aucun site trouvé", 404)
+        return error_response("Aucun article type trouvé", 404)
 
 
 @articletype_bp.route('/articletype', methods=['POST'])

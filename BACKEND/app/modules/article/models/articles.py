@@ -1,3 +1,5 @@
+# BACKEND\app\modules\article\models\articles.py
+
 from app.common.base.base_model import BaseModel
 from app.core.extensions import db
 from sqlalchemy import ForeignKey

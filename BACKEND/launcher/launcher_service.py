@@ -11,7 +11,7 @@ def insert_if_empty(model, schema, raw_data_list, label, bypass):
     """
     try:
         if not model.query.first() or bypass is True:
-            print(f"[INFO] Création des {label}")
+            print(f"[INFO] Création des {label}...")
 
             validated_data = [schema.load(raw_data) for raw_data in raw_data_list]
 
