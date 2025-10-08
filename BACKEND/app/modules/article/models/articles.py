@@ -10,5 +10,20 @@ class Article(BaseModel):
     code_externe = db.Column(db.String(100), nullable=False, unique=True)
     type_id = db.Column(db.String(36), ForeignKey("articles_type.id"), nullable=False)
 
-    # relation vers ArticleType
+    # Relation vers ArticleType
     type = relationship("ArticleType", back_populates="articles")
+
+    # Relations de composition
+    composants = relationship(
+        "ArticleComposition",
+        foreign_keys="ArticleComposition.parent_article_id",
+        back_populates="article_parent",
+        cascade="all, delete-orphan"
+    )
+
+    inclus_dans = relationship(
+        "ArticleComposition",
+        foreign_keys="ArticleComposition.composant_article_id",
+        back_populates="article_composant",
+        cascade="all, delete-orphan"
+    )
