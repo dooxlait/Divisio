@@ -1,0 +1,18 @@
+🔹 Lancer avec initialisation DB
+
+| $env:RUN_INIT_SCRIPT="true"
+| docker compose up --build
+
+👉 Le conteneur va automatiquement :
+
+* créer le dossier migrations/ si manquant
+* exécuter flask db migrate && flask db upgrade
+* exécuter ton launcher/initial_migration_FACTORY.py (si présent)
+* puis lancer ton serveur Flask
+
+🔹 Lancer sans initialisation
+
+| $env:RUN_INIT_SCRIPT="false"
+| docker compose up
+
+👉 Le conteneur lancera juste ton backend sans toucher à la base de données.

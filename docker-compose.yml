@@ -11,13 +11,37 @@ services:
       - ./backend/instance:/app/instance
     env_file:
       - ./backend/.env
+    environment:
+      - RUN_INIT_SCRIPT=${RUN_INIT_SCRIPT:-false}
+    command: >
+      bash -c "
+        if [ \"$RUN_INIT_SCRIPT\" = 'true' ]; then
+          echo '[INFO] Running DB migrations and init script...';
+          if [ ! -d migrations ]; then
+            echo '[INFO] Initializing migrations...';
+            flask db init;
+          fi;
+          flask db migrate -m 'Auto migration' || echo '[WARN] Migrate skipped';
+          flask db upgrade || echo '[WARN] Upgrade skipped';
+          if [ -f launcher/initial_migration_FACTORY.py ]; then
+            echo '[INFO] Running initial_migration_FACTORY.py...';
+            python -m launcher.initial_migration_FACTORY || echo '[WARN] Init script failed';
+          else
+            echo '[WARN] No launcher/initial_migration_FACTORY.py found, skipping...';
+          fi;
+        else
+          echo '[INFO] Skipping init script';
+        fi;
+        echo '[START] Launching Flask server...';
+        flask run --host=0.0.0.0
+      "
 
   frontend:
     build: ./FRONTEND/webapp
     container_name: frontend
     ports:
       - "3000:3000"
-    command: npm run dev   # mode dev pour hot reload
+    command: npm run dev
     develop:
       watch:
         - action: sync
