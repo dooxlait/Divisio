@@ -1,3 +1,0 @@
-from .articletypes_routes import articletype_bp
-from .article_routes import article_bp
-from .articlecomposition_routes import articlecomposition_bp
