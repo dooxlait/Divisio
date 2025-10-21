@@ -10,7 +10,7 @@ from .modules.factory import register_factory_routes
 from .modules.machine import register_machine_routes
 from .modules.hr import register_employee_routes
 from .modules.API import register_API_routes
-
+from .modules.articles import register_article_routes
 
 def create_app(config_class=DevelopmentConfig):
     """" Application factory """
@@ -35,6 +35,7 @@ def create_app(config_class=DevelopmentConfig):
     register_machine_routes(app, url_prefix=f"{api_prefix}/machines")
     register_employee_routes(app, url_prefix=f"{api_prefix}/employees")
     register_API_routes(app, url_prefix=f"{api_prefix}/API")
+    register_article_routes(app, url_prefix=f"{api_prefix}/articles")
 
 
 
@@ -42,6 +43,7 @@ def create_app(config_class=DevelopmentConfig):
     from app.modules.factory import models as factory_models
     from app.modules.hr import models as hr_models
     from app.modules.machine import models as machine_models
+    from app.modules.articles import models as article_models
 
    
     # Gestion des erreurs HTTP

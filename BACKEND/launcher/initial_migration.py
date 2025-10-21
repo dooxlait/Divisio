@@ -17,14 +17,12 @@ from app.modules.hr.schemas.employee import EmployeeCreateSchema
 from app.modules.machine.models import Machine
 from app.modules.machine.schemas.machine import MachineCreateSchema
 
-from app.modules.article.models import ArticleType
-from app.modules.article.schemas.articles_types import ArticleTypeCreateSchema
+from app.modules.articles.models import Category
+from app.modules.articles.schemas.category import CategorySchema
 
-from app.modules.article.models import Article
-from app.modules.article.schemas.articles import ArticleSchema
+from app.modules.articles.models import Unite
+from app.modules.articles.schemas.unite import UniteSchema
 
-from app.modules.article.models import ArticleComposition
-from app.modules.article.schemas import ArticleCompositionSchema
 
 app = create_app()
 
@@ -143,7 +141,7 @@ with app.app_context():
     {"first_name": "Camille", "last_name": "MARCELEAUD", "hire_date": "2022-08-01", "matricule": "7"},
     {"first_name": "Alain", "last_name": "leclerc", "hire_date": "2022-10-01", "termination_date": "2025-06-01", "matricule": "8"},
     {"first_name": "Audrey", "last_name": "CLAVEAU", "hire_date": "2024-01-02", "matricule": "9"},
-    {"first_name": "Damien", "last_name": "nonconnu", "hire_date": "2024-01-02", "matricule": "10"},
+    {"first_name": "Damien", "last_name": "VACILOTTO", "hire_date": "2024-01-02", "matricule": "10"},
 ]
 
     try:
@@ -159,77 +157,73 @@ with app.app_context():
 
     employee_ids = [e.id for e in Employee.query.with_entities(Employee.id)]
 
-    # --- ARTICLE TYPE
-    articletype_data = [
-        { "designation": "MATIÈRES PREMIÈRES", "description": "Matières premières entrant dans la fabrication des produits." },
-        { "designation": "PRODUIT FINI", "description": "Produit fini, emballé et prêt à être expédié." },
-        { "designation": "EMBALLAGE PRIMAIRE", "description": "Emballage directement en contact avec le produit." },
-        { "designation": "EMBALLAGE SECONDAIRE", "description": "Emballage extérieur destiné à regrouper plusieurs produits emballés." },
-        { "designation": "PRODUITS SEMI-FINIS", "description": "Produits nécessitant encore une ou plusieurs opérations avant d'être terminés." },
-        { "designation": "MATIÈRES PREMIÈRES CONSOMMABLES", "description": "Matières utilisées dans la production et consommées pendant le processus (ex : produits chimiques, colles, huiles)." },
-        { "designation": "PRODUITS EN COURS", "description": "Produits en phase de fabrication, nécessitant encore des opérations avant de devenir des produits finis." },
-        { "designation": "PIÈCES DE RECHANGE", "description": "Composants utilisés pour la maintenance ou la réparation des équipements." },
-        { "designation": "OUTILS DE PRODUCTION", "description": "Outils et équipements nécessaires à la production (ex : moules, gabarits, machines)." },
-        { "designation": "COMPOSANTS", "description": "Éléments qui seront assemblés pour constituer un produit fini ou semi-fini." },
-        { "designation": "RETURNS", "description": "Produits retournés par les clients, nécessitant une inspection avant d’être réintégrés dans le stock." },
-        { "designation": "PRODUITS DE MAINTENANCE", "description": "Produits utilisés pour la maintenance et l'entretien des équipements de production." },
-        { "designation": "ACCESSOIRES D'EMBALLAGE", "description": "Matériaux d'emballage utilisés pour l'assemblage ou l'étiquetage des produits finis." }
+    # --- CATEGORYS D'ARTICLE ---
+    article_types_data = [
+        {"code": "MP", "name": "Matière première", "description": "Matières premières utilisées dans la production des articles finis."},
+        {"code": "CF", "name": "Consommables / Fournitures", "description": "Articles utilisés dans le processus de production mais qui ne font pas partie du produit final."},
+        {"code": "PF", "name": "Produit fini", "description": "Articles finis prêts à être vendus aux clients."},
+        {"code": "PSF", "name": "Produit semi fini", "description": "Articles necessitant une ou plusieurs opérations avant d'être finis."},
+        {"code": "EMB", "name": "Emballage", "description": "Matériaux d'emballage utilisés pour protéger et présenter les produits finis."},
+        {"code": "DIV", "name": "Divers", "description": "Articles divers qui ne rentrent pas dans les autres catégories."},
     ]
 
     try:
-        success = insert_if_empty(ArticleType, ArticleTypeCreateSchema(), articletype_data, "Articles Types", False)
+        success = insert_if_empty(Category, CategorySchema(), article_types_data, "categories", False)
         modifications = modifications or success
     except Exception as e:
-        print(f"[ERREUR] Échec de l'insertion des articles types : {e}")
+        print(f"[ERREUR] Échec de l'insertion des catégories d'articles : {e}")
         import traceback
         traceback.print_exc()
 
-    
-    # --- ARTICLE
-    code_type_article_PF = ArticleType.query.filter_by(designation="PRODUIT FINI").first()
-    code_type_article_EMBP = ArticleType.query.filter_by(designation="EMBALLAGE PRIMAIRE").first()
-    article_data = [
+    # --- UNITE D'ARTICLE ---
+    unite_data = [
         {
-            "nom_article": "BIOCOOP - GREC BREBIS 2x150gr",  # String
-            "code_externe": "12345",  # String (les guillemets indiquent que c'est une chaîne)
-            "type_id": code_type_article_PF.id  # Assure-toi que c'est bien un Integer
+            "code": "L",
+            "libelle": "Litre",
+            "type_unite": "volume",
+            "description": "Unité de volume utilisée pour le lait et les autres liquides."
         },
         {
-            "nom_article": "POT 150cc DIA 95 GREINER",  # String
-            "code_externe": "1345",  # String (les guillemets indiquent que c'est une chaîne)
-            "type_id": code_type_article_EMBP.id  # Assure-toi que c'est bien un Integer
+            "code": "KG",
+            "libelle": "Kilogramme",
+            "type_unite": "poids",
+            "description": "Unité de masse utilisée pour les ingrédients solides et les emballages."
         },
         {
-            "nom_article": "OPERCULE SEDA IMPRIME",  # String
-            "code_externe": "13",  # String (les guillemets indiquent que c'est une chaîne)
-            "type_id": code_type_article_EMBP.id  # Assure-toi que c'est bien un Integer
-        }
+            "code": "G",
+            "libelle": "Gramme",
+            "type_unite": "poids",
+            "description": "Sous-unité du kilogramme pour mesurer de petites quantités."
+        },
+        {
+            "code": "PIECE",
+            "libelle": "Pièce",
+            "type_unite": "comptage",
+            "description": "Unité utilisée pour compter les articles individuels comme les pots ou bouteilles."
+        },
+        {
+            "code": "COLIS",
+            "libelle": "Colis",
+            "type_unite": "conditionnement",
+            "description": "Unité correspondant à un carton regroupant plusieurs pièces."
+        },
+        {
+            "code": "PALETTE",
+            "libelle": "Palette",
+            "type_unite": "logistique",
+            "description": "Unité logistique correspondant à un ensemble de colis prêts pour l’expédition."
+        },
     ]
 
     try:
-        success = insert_if_empty(Article, ArticleSchema(), article_data, "Article", False)
+        success = insert_if_empty(Unite, UniteSchema(), unite_data, "unités", False)
         modifications = modifications or success
     except Exception as e:
-        print(f"[ERREUR] Échec de l'insertion des articles : {e}")
+        print(f"[ERREUR] Échec de l'insertion des unités d'articles : {e}")
         import traceback
         traceback.print_exc()
 
-    # --- ARTICLE COMPOSE
-    PF = Article.query.filter_by(nom_article = "BIOCOOP - GREC BREBIS 2x150gr").first()
-    EMB_PRIMAIRE = Article.query.filter_by(nom_article = "POT 150cc DIA 95 GREINER").first()
-    OPERCULES = Article.query.filter_by(nom_article = "OPERCULE SEDA IMPRIME").first()
 
-    composition_data = [
-        {"parent_article_id": PF.id, "composant_article_id": EMB_PRIMAIRE.id, "quantite": 2},
-        {"parent_article_id": PF.id, "composant_article_id": OPERCULES.id, "quantite": 2} ,
-    ]
-    try:
-        success = insert_if_empty(ArticleComposition, ArticleCompositionSchema(), composition_data, "Composition", False)
-        modifications = modifications or success
-    except Exception as e:
-        print(f"[ERREUR] Échec de l'association des articles : {e}")
-        import traceback
-        traceback.print_exc()
 
 
     if modifications:

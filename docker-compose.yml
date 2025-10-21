@@ -21,11 +21,11 @@ services:
           fi;
           flask db migrate -m 'Auto migration' || echo '[WARN] Migrate skipped';
           flask db upgrade || echo '[WARN] Upgrade skipped';
-          if [ -f launcher/initial_migration_FACTORY.py ]; then
-            echo '[INFO] Running initial_migration_FACTORY.py...';
-            python -m launcher.initial_migration_FACTORY || echo '[WARN] Init script failed';
+          if [ -f launcher/initial_migration.py ]; then
+            echo '[INFO] Running initial_migration.py...';
+            python -m launcher.initial_migration || echo '[WARN] Init script failed';
           else
-            echo '[WARN] No launcher/initial_migration_FACTORY.py found, skipping...';
+            echo '[WARN] No launcher/initial_migration.py found, skipping...';
           fi;
         else
           echo '[INFO] Skipping init script';

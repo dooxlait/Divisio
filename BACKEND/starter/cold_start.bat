@@ -50,7 +50,7 @@ echo [DB] Applying migration...
 flask db upgrade
 
 REM --- Initialisation de la base via initial_migration_FACTORY.py ---
-IF EXIST "launcher\initial_migration_FACTORY.py" (
+IF EXIST "launcher\initial_migration.py" (
     echo [INFO] Initialisation de la base
 
     REM Activer l'environnement virtuel
