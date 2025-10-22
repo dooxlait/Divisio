@@ -2,3 +2,5 @@
 
 from .category import CategorySchema
 from .unite import UniteSchema
+from .article import ArticleSchema
+from .marques import MarqueSchema
