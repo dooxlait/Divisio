@@ -9,10 +9,14 @@ class Article(BaseModel):
     ean = db.Column(db.String(20))
     is_active = db.Column(db.Boolean, default=True)
 
-    id_categorie = db.Column(db.Integer, db.ForeignKey("categories.id"))
-    id_unite = db.Column(db.Integer, db.ForeignKey("unites.id"))
+    id_categorie = db.Column(db.String(36), db.ForeignKey("categories.id"))
+    id_unite = db.Column(db.String(36), db.ForeignKey("unites.id"))
+    id_marque = db.Column(db.String(36), db.ForeignKey("marques.id"))  # <--- clé étrangère
+    id_fournisseur = db.Column(db.String(36), db.ForeignKey("fournisseurs.id"))
 
     # Relations
     category = db.relationship("Category", back_populates="articles")
     unite = db.relationship("Unite", back_populates="articles")
+    marque = db.relationship("Marque", back_populates="articles")  # <--- relation inverse
+
 

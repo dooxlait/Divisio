@@ -1,7 +1,7 @@
 import pandas as pd
 from marshmallow import ValidationError
 from app.core.extensions import db
-from app.modules.articles.models.article import Article
+from app.modules.articles.models import Article
 from app.modules.articles.schemas.article.article_schema import ArticleSchema
 
 article_schema = ArticleSchema()

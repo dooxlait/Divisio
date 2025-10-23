@@ -4,3 +4,4 @@ from .categories import Category
 from .unite import Unite
 from .articles import Article
 from .marques import Marque
+from .fournisseur import Fournisseur

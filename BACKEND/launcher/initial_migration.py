@@ -23,6 +23,9 @@ from app.modules.articles.schemas.category import CategorySchema
 from app.modules.articles.models import Unite
 from app.modules.articles.schemas.unite import UniteSchema
 
+from app.modules.articles.models.marques import Marque
+from app.modules.articles.schemas.marques import MarqueSchema
+
 
 app = create_app()
 
@@ -224,7 +227,28 @@ with app.app_context():
         traceback.print_exc()
 
 
-
+# --- MARQUES D'ARTICLE ---
+    marque_data = [
+        {"nom": "Biochamps MSP", "description": "Marque spécialisée dans les produits laitiers biologiques."},
+        {"nom": "Biochamps RHF", "description": "Marque spécialisée dans les produits laitiers biologiques pour RHF."},
+        {"nom": "PROTT", "description": "Marque locale offrant une gamme de produits frais et naturels pour sportifs."},
+        {"nom": "Les Près D'Ariège", "description": "Artisan du soja depuis 1994, proposant des alternatives végétales de qualité."},
+        {"nom": "Laiterie des Pyrénées", "description": "Producteur de fromages et produits laitiers traditionnels des Pyrénées."},
+        {"nom": "Biocoop", "description": "Chaîne de magasins spécialisée dans les produits biologiques et équitables."},
+        {"nom": "La Vie Claire", "description": "Enseigne dédiée aux produits biologiques, naturels et diététiques."},
+        {"nom": "Naturalia", "description": "Chaîne de magasins bio proposant une large gamme de produits naturels."},
+        {"nom": "MORICE", "description": "Marque reconnue pour ses produits laitiers traditionnels et innovants."},
+        {"nom": "Vif", "description": "Marque proposant des produits laitiers frais et de qualité."},
+        {"nom": "Bonneterre", "description": "Marque engagée dans la production de produits biologiques et équitables."},
+    ]
+    
+    try:
+        success = insert_if_empty(Marque, MarqueSchema(), marque_data, "marques", False)
+        modifications = modifications or success
+    except Exception as e:
+        print(f"[ERREUR] Échec de l'insertion des marques d'articles : {e}")
+        import traceback
+        traceback.print_exc()
 
     if modifications:
         print("[INFO] Base initialisée avec succès")

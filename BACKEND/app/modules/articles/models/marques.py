@@ -12,6 +12,7 @@ class Marque(BaseModel):
 
     nom = db.Column(db.String(100), nullable=False, unique=True)  # Nom unique de la marque
     description = db.Column(db.Text, nullable=True)  # Description détaillée de la marque
+    is_active = db.Column(db.Boolean, default=True)  # Indique si la marque est active
 
     # Relations
     articles = db.relationship("Article", back_populates="marque")
