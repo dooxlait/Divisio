@@ -3,8 +3,11 @@ import math
 
 from marshmallow import ValidationError
 from app.core.extensions import db
+from app.modules.articles.models import Unite
+from app.modules.articles.models import Category
 from app.modules.articles.models import Article
 from app.modules.articles.schemas.article.article_schema import ArticleSchema
+
 
 article_schema = ArticleSchema()
 
@@ -37,12 +40,32 @@ def convertir_en_articles(df):
             ean_value = str(int(ean_value))
         else:
             ean_value = str(ean_value)
+            
+        # Recherche de l'unité
+        unite_id = None
+        if not pd.isna(row.get("unite_code")):
+            unite = Unite.query.filter_by(code=str(row["unite_code"])).first()
+            if unite:
+                unite_id = unite.id  # garder l'ID
+            else:
+                print(f"[WARN] Ligne {idx} : Unité avec le code '{row['unite_code']}' non trouvée. Valeur ignorée.")
+        
+        # Recherche de la catégorie
+        categorie_id = None
+        if not pd.isna(row.get("categorie_nom")):
+            categorie = Category.query.filter_by(name=str(row["categorie_nom"])).first()
+            if categorie:
+                categorie_id = categorie.id  # garder l'ID
+            else:
+                print(f"[WARN] Ligne {idx} : Catégorie avec le code '{row['categorie_nom']}' non trouvée. Valeur ignorée.")
 
         data = {
             "code": str(row["code"]),
             "designation": str(row["designation"]),
             "ean": ean_value,
             "is_active": row.get("is_active") if not pd.isna(row.get("is_active")) else True,
+            "id_unite": str(unite_id) if unite_id else None,  # passer une string ou None
+            "id_categorie": str(categorie_id) if categorie_id else None,
         }
 
         try:

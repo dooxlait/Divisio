@@ -11,6 +11,8 @@ services:
       - ./backend/.env
     environment:
       - RUN_INIT_SCRIPT=${RUN_INIT_SCRIPT:-false}
+      - FLASK_ENV=development      # Active le mode dev
+      - FLASK_DEBUG=1              # Active le reload automatique
     command: >
       bash -c "
         if [ \"$RUN_INIT_SCRIPT\" = 'true' ]; then
@@ -30,8 +32,8 @@ services:
         else
           echo '[INFO] Skipping init script';
         fi;
-        echo '[START] Launching Flask server...';
-        flask run --host=0.0.0.0
+        echo '[START] Launching Flask server with reload...';
+        flask run --host=0.0.0.0 --reload
       "
 
   frontend:
