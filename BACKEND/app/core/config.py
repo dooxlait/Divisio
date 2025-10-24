@@ -7,19 +7,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    """Config de base (commune à tous les environnements)"""
     SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-key")
-    SQLALCHEMY_TRACK_MODIFICATIONS = False  # recommandé pour éviter un warning
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    EXPORT_DIR = os.getenv("EXPORT_DIR", "RESSOURCES/Export")  # valeur par défaut
 
 class DevelopmentConfig(Config):
-    """Config propre au développement"""
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.getenv(
-        "DATABASE_URI", 
-        "sqlite:///dev.db"
-    )
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI", "sqlite:///dev.db")
 
 class ProductionConfig(Config):
-    """Config de production"""
-    DEBUG = False 
+    DEBUG = False
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URI")

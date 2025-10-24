@@ -8,7 +8,7 @@ from sqlalchemy import text
 from app.core.extensions import db
 from app.common.response.response import success_response, error_response
 
-api_bp = Blueprint("api", __name__, url_prefix="/api/check")
+api_bp = Blueprint("api", __name__)
 
 
 # --- Fonctions utilitaires ---
