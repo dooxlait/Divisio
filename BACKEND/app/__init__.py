@@ -32,10 +32,10 @@ def create_app(config_class=DevelopmentConfig):
     # Enregistrer les modules avec le préfixe /api
     
     register_factory_routes(app, url_prefix=f"{api_prefix}/factory")
-    register_machine_routes(app, url_prefix=f"{api_prefix}/machines")
-    register_employee_routes(app, url_prefix=f"{api_prefix}/employees")
+    register_machine_routes(app, url_prefix=f"{api_prefix}/machine")
+    register_employee_routes(app, url_prefix=f"{api_prefix}/employee")
     register_API_routes(app, url_prefix=f"{api_prefix}/API")
-    register_article_routes(app, url_prefix=f"{api_prefix}/articles")
+    register_article_routes(app, url_prefix=f"{api_prefix}/article")
 
 
 

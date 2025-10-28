@@ -3,13 +3,13 @@ from datetime import datetime
 import os
 
 from app.common.response.response import success_response, error_response
-from app.modules.articles.services import create_article_by_list, lire_articles, export_to_excel
-from app.modules.articles.schemas.article import ArticleSchema
+from app.modules.articles.services import create_article_by_list, lire_articles, export_to_excel, enrichir_template
+from app.modules.articles.schemas.article import ArticleSchema, ArticleReadSchema
 from app.core.config import Config
 
 article_bp = Blueprint('article_bp', __name__, url_prefix='/articles')
 
-@article_bp.route("/", methods=["POST"])
+@article_bp.route("/import-article", methods=["POST"])
 def create_article_by_list_route():
     fichier = request.files.get("file")
     if not fichier:
@@ -24,6 +24,23 @@ def create_article_by_list_route():
         )
     except Exception as e:
         return error_response(f"Erreur lors de l'importation : {str(e)}", 500)
+
+
+@article_bp.route("/import-template", methods=["POST"])
+def import_template():
+    fichier = request.files.get("file")
+    if not fichier:
+        return error_response("Aucun fichier fourni", 400)
+
+    try:
+        count = enrichir_template(fichier)
+        return success_response(
+            {"message": f"{count} articles enrichis avec succès"}
+        )
+    except Exception as e:
+        return error_response(
+            f"Erreur lors de la génération du modèle : {str(e)}", 500
+        )
     
 
 @article_bp.route("/export", methods=["GET"])
@@ -54,7 +71,7 @@ def export_articles():
 @article_bp.route("/", methods=["GET"])
 def get_articles():
     articles = lire_articles()
-    schema = ArticleSchema(many=True)
+    schema = ArticleReadSchema(many=True)
     articles = schema.dump(articles)
     return success_response(
         data={"articles": articles},

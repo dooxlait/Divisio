@@ -13,6 +13,7 @@ services:
       - RUN_INIT_SCRIPT=${RUN_INIT_SCRIPT:-false}
       - FLASK_ENV=development      # Active le mode dev
       - FLASK_DEBUG=1              # Active le reload automatique
+      - PYTHONUNBUFFERED=1         # Assure un output immédiat des logs
     command: >
       bash -c "
         if [ \"$RUN_INIT_SCRIPT\" = 'true' ]; then

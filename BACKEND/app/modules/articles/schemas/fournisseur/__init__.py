@@ -1,0 +1,1 @@
+from .fournisseur_schema import FournisseurSchema
