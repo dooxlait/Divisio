@@ -3,3 +3,4 @@
 from .category_routes import category_bp
 from .article_routes import article_bp
 from .marque_routes import marque_bp
+from .fournisseur_routes import fournisseur_bp

@@ -2,7 +2,7 @@ import pandas as pd
 import math
 from marshmallow import ValidationError
 from app.core.extensions import db
-from app.modules.articles.models import Unite, Category, Article, Marque, Fournisseur
+from app.modules.articles.models import Unite, Category, Article, Marque, Fournisseur, ArticleComposition
 from app.modules.articles.schemas.article.article_schema import ArticleSchema
 
 article_schema = ArticleSchema()
@@ -131,6 +131,7 @@ def rajouter_information_pot(df):
         df = df.dropna(how="all")
         df.columns = df.columns.str.strip()
         df["CODE POT"] = df["CODE POT"].astype(str).str.strip()
+        df = df.drop_duplicates(subset=["CODE POT", "FOURNISSEUR"])
         articles_modifies = []
 
         for idx, row in df.iterrows():
@@ -174,6 +175,7 @@ def rajouter_information_couvercle(df):
         df = df.dropna(how="all")
         df.columns = df.columns.str.strip()
         df["CODE COUVERCLE"] = df["CODE COUVERCLE"].astype(str).str.strip()
+        df = df.drop_duplicates(subset=["CODE COUVERCLE", "FOURNISSEUR.2"])
         articles_modifies = []
 
         for idx, row in df.iterrows():
@@ -217,6 +219,7 @@ def rajouter_information_coiffe(df):
         df = df.dropna(how="all")
         df.columns = df.columns.str.strip()
         df["CODE COIFFE"] = df["CODE COIFFE"].astype(str).str.strip()
+        df = df.drop_duplicates(subset=["CODE COIFFE", "FOURNISSEUR.3"])
         articles_modifies = []
 
         for idx, row in df.iterrows():
@@ -260,6 +263,7 @@ def rajouter_information_carton(df):
         df = df.dropna(how="all")
         df.columns = df.columns.str.strip()
         df["CODE CARTON"] = df["CODE CARTON"].astype(str).str.strip()
+        df = df.drop_duplicates(subset=["CODE CARTON", "FOURNISSEUR.4"])
         articles_modifies = []
 
         for idx, row in df.iterrows():
@@ -343,6 +347,60 @@ def convertir_en_articles(df):
 
     return articles
 
+def etablir_relation_entre_article(df):
+    """Établit les relations entre articles basées sur des codes spécifiques."""
+    print("[INFO] Établissement des relations entre articles.")
+    try:
+        df = df.dropna(how="all")
+        df.columns = df.columns.str.strip()
+        df["CODE ARTICLE"] = df["CODE ARTICLE"].astype(str).str.strip()
+        df = df.drop_duplicates(subset=["CODE ARTICLE"])
+        relations_etablies = 0
+
+        # Liste des composants et la colonne correspondante dans le DataFrame
+        composants_info = [
+            ("CODE OPERCULE", "PCB"),
+            ("CODE POT", "PCB"),
+            ("CODE COUVERCLE", "PCB"),
+            ("CODE COIFFE", "PCB"),
+            ("CODE CARTON", "PCB")
+        ]
+
+        for idx, row in df.iterrows():
+            code_article = row.get("CODE ARTICLE")
+            article = Article.query.filter_by(code=str(code_article)).first()
+
+            if not article:
+                print(f"[WARN] Article avec code '{code_article}' non trouvé en base.")
+                continue
+
+            for code_col, qty_col in composants_info:
+                code_composant = row.get(code_col)
+                if pd.isna(code_composant):
+                    continue
+
+                composant = Article.query.filter_by(code=str(code_composant)).first()
+                if not composant:
+                    print(f"[WARN] Composant avec code '{code_composant}' non trouvé pour l'article '{code_article}'.")
+                    continue
+
+                quantity = row.get(qty_col, 1)
+                article_composition = ArticleComposition(
+                    article_id=article.id,
+                    component_id=composant.id,
+                    quantity=quantity
+                )
+                db.session.add(article_composition)
+                relations_etablies += 1
+
+        db.session.commit()
+        return relations_etablies
+
+    except Exception as e:
+        raise RuntimeError(f"Erreur lors du traitement du DataFrame pour les relations : {str(e)}")
+
+
+
 
 # Fonctions d’enregistrement et de lecture en base
 
@@ -397,6 +455,7 @@ def enrichir_template(fichier):
         count_couvercle = rajouter_information_couvercle(df_enrichi)
         count_coiffe = rajouter_information_coiffe(df_enrichi)
         count_carton = rajouter_information_carton(df_enrichi)
+        count_relation = etablir_relation_entre_article(df_enrichi)
         total = count_marque + count_pot
         return {
             "total": total,
@@ -405,7 +464,8 @@ def enrichir_template(fichier):
             "count_opercule": count_opercule,
             "count_couvercle": count_couvercle,
             "count_coiffe": count_coiffe,
-            "count_carton": count_carton
+            "count_carton": count_carton,
+            "count_relation": count_relation
         }
     except Exception as e:
         raise RuntimeError(f"Erreur lors de la génération du template : {str(e)}")
