@@ -76,8 +76,50 @@ def rajouter_marques_reference(df):
     except Exception as e:
         db.session.rollback()
         raise RuntimeError(f"Erreur lors de l'ajout des marques de référence : {str(e)}")
+    
+def rajouter_information_opercules(df):
+    """ 
+    Récupère un dataframe et ajoute les informations d'opercules aux articles existants en base.
+    Renvoie le nombre d'articles modifiés.
+    """
+    print(f'[INFO] Ajout des informations d\'opercules aux articles.')
+    try:
+        df = df.dropna(how="all")
+        df.columns = df.columns.str.strip()
+        df["CODE OPERCULE"] = df["CODE OPERCULE"].astype(str).str.strip()
+        articles_modifies = []
 
-def rajouter_information_pot_set(df):
+        for idx, row in df.iterrows():
+            code_article = row.get("CODE OPERCULE")  # ou "CODE ARTICLE" si c'est le bon
+            opercule_marque = row.get("FOURNISSEUR.1")
+            
+            if pd.isna(code_article) or pd.isna(opercule_marque):
+                print(f"[WARN] Ligne {idx} ignorée : CODE ARTICLE ou OPERCULE manquant.")
+                continue
+            
+            article = Article.query.filter_by(code=str(code_article)).first()
+            if not article:
+                print(f"[WARN] Article avec code '{code_article}' non trouvé en base.")
+                continue    
+            
+            fournisseur = Fournisseur.query.filter_by(nom=str(opercule_marque).upper()).first()
+            if not fournisseur:
+                print(f"[WARN] Ligne {idx} : Fournisseur '{opercule_marque}' non trouvé. Création d'un nouveau fournisseur.")
+                fournisseur = Fournisseur(nom=str(opercule_marque).upper())
+                db.session.add(fournisseur)
+                db.session.flush()  # id généré disponible
+            
+            article.id_fournisseur = fournisseur.id
+            articles_modifies.append(article)
+        if articles_modifies:
+            db.session.commit()
+        return len(articles_modifies)
+    except Exception as e:
+        db.session.rollback()
+        raise RuntimeError(f"Erreur lors de l'ajout des informations de l'opercule : {str(e)}")
+
+
+def rajouter_information_pot(df):
     """
     Récupère un dataframe et ajoute les informations de pot aux articles existants en base.
     Renvoie le nombre d'articles modifiés.
@@ -119,6 +161,135 @@ def rajouter_information_pot_set(df):
     except Exception as e:
         db.session.rollback()
         raise RuntimeError(f"Erreur lors de l'ajout des informations de pot/set : {str(e)}")
+    
+def rajouter_information_couvercle(df):
+    """
+    Récupère un dataframe et ajoute les informations de fournisseur de couvercles aux articles existants en base.
+    Renvoie le nombre d'articles modifiés.
+    """
+
+    print(f'[INFO] Ajout des informations de fournisseurs de couvercles aux articles.')
+    
+    try:
+        df = df.dropna(how="all")
+        df.columns = df.columns.str.strip()
+        df["CODE COUVERCLE"] = df["CODE COUVERCLE"].astype(str).str.strip()
+        articles_modifies = []
+
+        for idx, row in df.iterrows():
+            code_article = row.get("CODE COUVERCLE")  # ou "CODE ARTICLE" si c'est le bon
+            pot_marque = row.get("FOURNISSEUR.2")
+            
+            if pd.isna(code_article) or pd.isna(pot_marque):
+                print(f"[WARN] Ligne {idx} ignorée : CODE ARTICLE ou COUVERCLE manquant.")
+                continue
+            
+            article = Article.query.filter_by(code=str(code_article)).first()
+            if not article:
+                print(f"[WARN] Article avec code '{code_article}' non trouvé en base.")
+                continue    
+            
+            fournisseur = Fournisseur.query.filter_by(nom=str(pot_marque).upper()).first()
+            if not fournisseur:
+                print(f"[WARN] Ligne {idx} : Fournisseur '{pot_marque}' non trouvé. Création d'un nouveau fournisseur.")
+                fournisseur = Fournisseur(nom=str(pot_marque).upper())
+                db.session.add(fournisseur)
+                db.session.flush()  # id généré disponible
+            
+            article.id_fournisseur = fournisseur.id
+            articles_modifies.append(article)
+        if articles_modifies:
+            db.session.commit()
+        return len(articles_modifies)
+    except Exception as e:
+        db.session.rollback()
+        raise RuntimeError(f"Erreur lors de l'ajout des informations du fournisseur couvercle : {str(e)}")
+    
+def rajouter_information_coiffe(df):
+    """
+    Récupère un dataframe et ajoute les informations de fournisseur de coiffes aux articles existants en base.
+    Renvoie le nombre d'articles modifiés.
+    """
+
+    print(f'[INFO] Ajout des informations de fournisseur de coiffes aux articles.')
+    
+    try:
+        df = df.dropna(how="all")
+        df.columns = df.columns.str.strip()
+        df["CODE COIFFE"] = df["CODE COIFFE"].astype(str).str.strip()
+        articles_modifies = []
+
+        for idx, row in df.iterrows():
+            code_article = row.get("CODE COIFFE")  # ou "CODE ARTICLE" si c'est le bon
+            coiffe_marque = row.get("FOURNISSEUR.3")
+            
+            if pd.isna(code_article) or pd.isna(coiffe_marque):
+                print(f"[WARN] Ligne {idx} ignorée : CODE ARTICLE ou COIFFE manquant.")
+                continue
+            
+            article = Article.query.filter_by(code=str(code_article)).first()
+            if not article:
+                print(f"[WARN] Article avec code '{code_article}' non trouvé en base.")
+                continue    
+            
+            fournisseur = Fournisseur.query.filter_by(nom=str(coiffe_marque).upper()).first()
+            if not fournisseur:
+                print(f"[WARN] Ligne {idx} : Fournisseur '{coiffe_marque}' non trouvé. Création d'un nouveau fournisseur.")
+                fournisseur = Fournisseur(nom=str(coiffe_marque).upper())
+                db.session.add(fournisseur)
+                db.session.flush()  # id généré disponible
+            
+            article.id_fournisseur = fournisseur.id
+            articles_modifies.append(article)
+        if articles_modifies:
+            db.session.commit()
+        return len(articles_modifies)
+    except Exception as e:
+        db.session.rollback()
+        raise RuntimeError(f"Erreur lors de l'ajout des informations du fourisseur de coiffe : {str(e)}")
+    
+def rajouter_information_carton(df):
+    """
+    Récupère un dataframe et ajoute les informations de carton aux articles existants en base.
+    Renvoie le nombre d'articles modifiés.
+    """
+
+    print(f'[INFO] Ajout des informations des fournisseur de carton aux articles.')
+    
+    try:
+        df = df.dropna(how="all")
+        df.columns = df.columns.str.strip()
+        df["CODE CARTON"] = df["CODE CARTON"].astype(str).str.strip()
+        articles_modifies = []
+
+        for idx, row in df.iterrows():
+            code_article = row.get("CODE CARTON")  # ou "CODE ARTICLE" si c'est le bon
+            carton_marque = row.get("FOURNISSEUR.4")
+            
+            if pd.isna(code_article) or pd.isna(carton_marque):
+                print(f"[WARN] Ligne {idx} ignorée : CODE ARTICLE ou CARTON manquant.")
+                continue
+            
+            article = Article.query.filter_by(code=str(code_article)).first()
+            if not article:
+                print(f"[WARN] Article avec code '{code_article}' non trouvé en base.")
+                continue    
+            
+            fournisseur = Fournisseur.query.filter_by(nom=str(carton_marque).upper()).first()
+            if not fournisseur:
+                print(f"[WARN] Ligne {idx} : Fournisseur '{carton_marque}' non trouvé. Création d'un nouveau fournisseur.")
+                fournisseur = Fournisseur(nom=str(carton_marque).upper())
+                db.session.add(fournisseur)
+                db.session.flush()  # id généré disponible
+            
+            article.id_fournisseur = fournisseur.id
+            articles_modifies.append(article)
+        if articles_modifies:
+            db.session.commit()
+        return len(articles_modifies)
+    except Exception as e:
+        db.session.rollback()
+        raise RuntimeError(f"Erreur lors de l'ajout des informations du fournisseur de carton : {str(e)}")
 
 def convertir_en_articles(df):
     """Transforme un DataFrame en liste d'objets Article validés."""
@@ -221,9 +392,21 @@ def enrichir_template(fichier):
     try:
         df_enrichi = traiter_onglets_excel(fichier)
         count_marque = rajouter_marques_reference(df_enrichi)
-        count_pot = rajouter_information_pot_set(df_enrichi)
+        count_pot = rajouter_information_pot(df_enrichi)
+        count_opercule = rajouter_information_opercules(df_enrichi)
+        count_couvercle = rajouter_information_couvercle(df_enrichi)
+        count_coiffe = rajouter_information_coiffe(df_enrichi)
+        count_carton = rajouter_information_carton(df_enrichi)
         total = count_marque + count_pot
-        return total
+        return {
+            "total": total,
+            "count_marque": count_marque,
+            "count_pot": count_pot,
+            "count_opercule": count_opercule,
+            "count_couvercle": count_couvercle,
+            "count_coiffe": count_coiffe,
+            "count_carton": count_carton
+        }
     except Exception as e:
         raise RuntimeError(f"Erreur lors de la génération du template : {str(e)}")
 

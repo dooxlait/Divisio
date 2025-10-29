@@ -33,10 +33,14 @@ def import_template():
         return error_response("Aucun fichier fourni", 400)
 
     try:
-        count = enrichir_template(fichier)
-        return success_response(
-            {"message": f"{count} articles enrichis avec succès"}
-        )
+        resultats = enrichir_template(fichier)
+        return success_response({
+            "message": f"{resultats['total']} articles enrichis avec succès",
+            "détail": {
+                "marques": resultats["count_marque"],
+                "pots": resultats["count_pot"]
+            }
+        })
     except Exception as e:
         return error_response(
             f"Erreur lors de la génération du modèle : {str(e)}", 500
