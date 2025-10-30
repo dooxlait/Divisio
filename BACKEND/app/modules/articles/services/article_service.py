@@ -2,7 +2,7 @@ import pandas as pd
 import math
 from marshmallow import ValidationError
 from app.core.extensions import db
-from app.modules.articles.models import Unite, Category, Article, Marque, Fournisseur, ArticleComposition, Palettisation
+from app.modules.articles.models import Unite, Category, Article, Marque, Fournisseur, ArticleComposition, Palettisation, CaracteristiqueArticle
 from app.modules.articles.schemas.article.article_schema import ArticleSchema
 
 article_schema = ArticleSchema()
@@ -38,21 +38,22 @@ def traiter_onglets_excel(fichier):
 
 # Fonctions de transformation et validation
 
-def rajouter_PCB(df):
-    """Ajoute les PCB aux articles existants en base et commit."""
-    print("[INFO] Ajout des PCB au DataFrame.")
+def ecrire_informations_caracteristiques_article(df):
+    """Écrit les informations des caractéristiques des articles à partir d'un DataFrame."""
+    print("[INFO] Écriture des caractéristiques des articles.")
     try:
         df = df.dropna(how="all")
         df.columns = df.columns.str.strip()
         df["CODE ARTICLE"] = df["CODE ARTICLE"].astype(str).str.strip()
         df["PCB"] = df["PCB"].astype(float)
+        df["GENCOD"] = df["GENCOD"].astype(str).str.strip()
         articles_modifies = []
-
         for idx, row in df.iterrows():
             code_article = row.get("CODE ARTICLE")
             pcb_value = row.get("PCB")
-            if pd.isna(code_article) or pd.isna(pcb_value):
-                print(f"[WARN] Ligne {idx} ignorée : CODE ARTICLE ou PCB manquant.")
+            ean_value = row.get("GENCOD")
+            if pd.isna(code_article):
+                print(f"[WARN] Ligne {idx} ignorée : CODE ARTICLE manquant.")
                 continue
 
             article = Article.query.filter_by(code=str(code_article)).first()
@@ -60,17 +61,25 @@ def rajouter_PCB(df):
                 print(f"[WARN] Article avec code '{code_article}' non trouvé en base.")
                 continue
 
-            article.pcb = int(pcb_value)
-            articles_modifies.append(article)
+            if not article.caracteristique:
+                caracteristique = CaracteristiqueArticle(id_article=article.id)
+                article.caracteristique = caracteristique
 
+            if not pd.isna(pcb_value):
+                article.caracteristique.pcb = int(pcb_value)
+
+            if not pd.isna(ean_value) and ean_value.lower() != 'nan':
+                # méthode sûre pour garder les codes commençant par 0
+                article.caracteristique.ean = str(ean_value).rstrip(".0")
+
+            articles_modifies.append(article)
         if articles_modifies:
             db.session.commit()
-
         return len(articles_modifies)
-
+        
     except Exception as e:
-        db.session.rollback()
-        raise RuntimeError(f"Erreur lors de l'ajout des PCB : {str(e)}")
+        raise RuntimeError(f"Erreur lors de l'écriture des caractéristiques des articles : {str(e)}")
+
 
 def rajouter_marques_reference(df): 
     """Ajoute les marques de référence aux articles existants en base et commit."""
@@ -367,8 +376,6 @@ def convertir_en_articles(df):
         data = {
             "code": str(row["code"]),
             "designation": str(row["designation"]),
-            "ean": ean_value,
-            "pcb": row.get("PCB") if not pd.isna(row.get("PCB")) else None,
             "is_active": row.get("is_active") if not pd.isna(row.get("is_active")) else True,
             "id_unite": str(unite_id) if unite_id else None,
             "id_categorie": str(categorie_id) if categorie_id else None,
@@ -523,7 +530,6 @@ def enrichir_template(fichier):
     try:
         df_enrichi = traiter_onglets_excel(fichier)
         count_marque = rajouter_marques_reference(df_enrichi)
-        count_pcb = rajouter_PCB(df_enrichi)
         count_pot = rajouter_information_pot(df_enrichi)
         count_opercule = rajouter_information_opercules(df_enrichi)
         count_couvercle = rajouter_information_couvercle(df_enrichi)
@@ -531,18 +537,19 @@ def enrichir_template(fichier):
         count_carton = rajouter_information_carton(df_enrichi)
         count_relation = etablir_relation_entre_article(df_enrichi)
         count_palettisation = etablir_plan_palettisation(df_enrichi)
+        count_caracteristique = ecrire_informations_caracteristiques_article(df_enrichi)
         total = count_marque + count_pot
         return {
             "total": total,
             "count_marque": count_marque,
             "count_pot": count_pot,
-            "count_pcb": count_pcb,
             "count_opercule": count_opercule,
             "count_couvercle": count_couvercle,
             "count_coiffe": count_coiffe,
             "count_carton": count_carton,
             "count_relation": count_relation,
-            "count_palettisation": count_palettisation
+            "count_palettisation": count_palettisation,
+            "count_caracteristique": count_caracteristique
         }
     except Exception as e:
         raise RuntimeError(f"Erreur lors de la génération du template : {str(e)}")

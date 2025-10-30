@@ -37,14 +37,14 @@ def import_template():
         return success_response({
             "message": f"{resultats['total']} articles enrichis avec succès",
             "détail": {
-                "pcbs": resultats["count_pcb"],
                 "marques": resultats["count_marque"],
                 "pots": resultats["count_pot"],
                 "couvercles": resultats["count_couvercle"],
                 "coiffes": resultats["count_coiffe"],
                 "cartons": resultats["count_carton"],
                 "pallettisations": resultats["count_palettisation"],
-                "relation": resultats["count_relation"]
+                "relation": resultats["count_relation"],
+                "caracteristiques": resultats["count_caracteristique"]
             }
         })
     except Exception as e:

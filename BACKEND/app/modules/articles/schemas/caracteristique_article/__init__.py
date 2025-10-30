@@ -1,0 +1,1 @@
+from .caracteristique_article_schema import CaracteristiqueArticleSchema

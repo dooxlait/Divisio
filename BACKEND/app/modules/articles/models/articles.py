@@ -6,9 +6,7 @@ class Article(BaseModel):
 
     code = db.Column(db.String(50), nullable=False, unique=True)
     designation = db.Column(db.String(255), nullable=False)
-    ean = db.Column(db.String(20))
     is_active = db.Column(db.Boolean, default=True)
-    pcb = db.Column(db.Integer, nullable=True)
 
     id_categorie = db.Column(db.String(36), db.ForeignKey("categories.id"))
     id_unite = db.Column(db.String(36), db.ForeignKey("unites.id"))
@@ -33,5 +31,13 @@ class Article(BaseModel):
         "Palettisation",
         back_populates="article",
         uselist=False,
+        cascade="all, delete-orphan"
+    )
+    
+    # Relation 1–1 vers les caractéristiques
+    caracteristique = db.relationship(
+        "CaracteristiqueArticle",
+        uselist=False,
+        back_populates="article",
         cascade="all, delete-orphan"
     )

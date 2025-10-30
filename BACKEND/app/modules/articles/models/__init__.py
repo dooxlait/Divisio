@@ -7,3 +7,4 @@ from .marques import Marque
 from .fournisseur import Fournisseur
 from .composition import ArticleComposition
 from .palettisation import Palettisation
+from .caracteristique_article import CaracteristiqueArticle
