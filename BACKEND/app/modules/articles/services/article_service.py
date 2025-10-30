@@ -2,7 +2,7 @@ import pandas as pd
 import math
 from marshmallow import ValidationError
 from app.core.extensions import db
-from app.modules.articles.models import Unite, Category, Article, Marque, Fournisseur, ArticleComposition
+from app.modules.articles.models import Unite, Category, Article, Marque, Fournisseur, ArticleComposition, Palettisation
 from app.modules.articles.schemas.article.article_schema import ArticleSchema
 
 article_schema = ArticleSchema()
@@ -11,7 +11,7 @@ article_schema = ArticleSchema()
 
 def lire_excel(fichier):
     """Lit le fichier Excel et renvoie un DataFrame en ignorant les deux premières lignes."""
-    print("[INFO] Lecture du fichier Excel pour l'importation des articles (titres à la ligne 3).")
+    print("[INFO] Lecture du fichier Excel pour l'importation des articles.")
     try:
         df = pd.read_excel(fichier)
         return df
@@ -37,6 +37,40 @@ def traiter_onglets_excel(fichier):
 
 
 # Fonctions de transformation et validation
+
+def rajouter_PCB(df):
+    """Ajoute les PCB aux articles existants en base et commit."""
+    print("[INFO] Ajout des PCB au DataFrame.")
+    try:
+        df = df.dropna(how="all")
+        df.columns = df.columns.str.strip()
+        df["CODE ARTICLE"] = df["CODE ARTICLE"].astype(str).str.strip()
+        df["PCB"] = df["PCB"].astype(float)
+        articles_modifies = []
+
+        for idx, row in df.iterrows():
+            code_article = row.get("CODE ARTICLE")
+            pcb_value = row.get("PCB")
+            if pd.isna(code_article) or pd.isna(pcb_value):
+                print(f"[WARN] Ligne {idx} ignorée : CODE ARTICLE ou PCB manquant.")
+                continue
+
+            article = Article.query.filter_by(code=str(code_article)).first()
+            if not article:
+                print(f"[WARN] Article avec code '{code_article}' non trouvé en base.")
+                continue
+
+            article.pcb = int(pcb_value)
+            articles_modifies.append(article)
+
+        if articles_modifies:
+            db.session.commit()
+
+        return len(articles_modifies)
+
+    except Exception as e:
+        db.session.rollback()
+        raise RuntimeError(f"Erreur lors de l'ajout des PCB : {str(e)}")
 
 def rajouter_marques_reference(df): 
     """Ajoute les marques de référence aux articles existants en base et commit."""
@@ -334,6 +368,7 @@ def convertir_en_articles(df):
             "code": str(row["code"]),
             "designation": str(row["designation"]),
             "ean": ean_value,
+            "pcb": row.get("PCB") if not pd.isna(row.get("PCB")) else None,
             "is_active": row.get("is_active") if not pd.isna(row.get("is_active")) else True,
             "id_unite": str(unite_id) if unite_id else None,
             "id_categorie": str(categorie_id) if categorie_id else None,
@@ -384,7 +419,7 @@ def etablir_relation_entre_article(df):
                     print(f"[WARN] Composant avec code '{code_composant}' non trouvé pour l'article '{code_article}'.")
                     continue
 
-                quantity = row.get(qty_col, 1)
+                quantity = row.get(qty_col, 1) if code_col != "CODE CARTON" else 1
                 article_composition = ArticleComposition(
                     article_id=article.id,
                     component_id=composant.id,
@@ -399,7 +434,45 @@ def etablir_relation_entre_article(df):
     except Exception as e:
         raise RuntimeError(f"Erreur lors du traitement du DataFrame pour les relations : {str(e)}")
 
+def etablir_plan_palettisation(df):
+    print("[INFO] Établissement des plans de palettisation pour les articles.")
+    try:
+        df = df.dropna(how="all")
+        df.columns = df.columns.str.strip()
+        df["CODE ARTICLE"] = df["CODE ARTICLE"].astype(str).str.strip()
+        df = df.drop_duplicates(subset=["CODE ARTICLE"])
+        palettisations_creees = 0
 
+        for _, row in df.iterrows():
+            code_article = row.get("CODE ARTICLE")
+            article = Article.query.filter_by(code=code_article).first()
+            if not article:
+                print(f"[WARN] Article avec code '{code_article}' non trouvé en base.")
+                continue
+
+            nb_colis_par_couche = row.get("NOMBRE DE COLIS/COUCHE")
+            nb_couches_par_palette = row.get("NOMBRE DE COUCHE/PALETTE")
+
+
+            if pd.isna(nb_colis_par_couche) or pd.isna(nb_couches_par_palette):
+                print(f"[WARN] Données de palettisation incomplètes pour l'article '{code_article}'.")
+                continue
+
+            palettisation = article.palettisation or Palettisation(id_article=article.id)
+            article.palettisation = palettisation  # assure la relation
+
+            palettisation.nb_colis_par_couche = int(nb_colis_par_couche)
+            palettisation.nb_couches_par_palette = int(nb_couches_par_palette)
+
+            db.session.add(palettisation)
+            palettisations_creees += 1
+
+        db.session.commit()
+        return palettisations_creees
+
+    except Exception as e:
+        db.session.rollback()
+        raise RuntimeError(f"Erreur lors de l'établissement des plans de palettisation : {str(e)}")
 
 
 # Fonctions d’enregistrement et de lecture en base
@@ -450,22 +523,26 @@ def enrichir_template(fichier):
     try:
         df_enrichi = traiter_onglets_excel(fichier)
         count_marque = rajouter_marques_reference(df_enrichi)
+        count_pcb = rajouter_PCB(df_enrichi)
         count_pot = rajouter_information_pot(df_enrichi)
         count_opercule = rajouter_information_opercules(df_enrichi)
         count_couvercle = rajouter_information_couvercle(df_enrichi)
         count_coiffe = rajouter_information_coiffe(df_enrichi)
         count_carton = rajouter_information_carton(df_enrichi)
         count_relation = etablir_relation_entre_article(df_enrichi)
+        count_palettisation = etablir_plan_palettisation(df_enrichi)
         total = count_marque + count_pot
         return {
             "total": total,
             "count_marque": count_marque,
             "count_pot": count_pot,
+            "count_pcb": count_pcb,
             "count_opercule": count_opercule,
             "count_couvercle": count_couvercle,
             "count_coiffe": count_coiffe,
             "count_carton": count_carton,
-            "count_relation": count_relation
+            "count_relation": count_relation,
+            "count_palettisation": count_palettisation
         }
     except Exception as e:
         raise RuntimeError(f"Erreur lors de la génération du template : {str(e)}")

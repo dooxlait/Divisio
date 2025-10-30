@@ -8,6 +8,7 @@ class Article(BaseModel):
     designation = db.Column(db.String(255), nullable=False)
     ean = db.Column(db.String(20))
     is_active = db.Column(db.Boolean, default=True)
+    pcb = db.Column(db.Integer, nullable=True)
 
     id_categorie = db.Column(db.String(36), db.ForeignKey("categories.id"))
     id_unite = db.Column(db.String(36), db.ForeignKey("unites.id"))
@@ -25,4 +26,12 @@ class Article(BaseModel):
         "ArticleComposition",
         foreign_keys="[ArticleComposition.article_id]",
         back_populates="article"
+    )
+    
+    # Liaison vers Palettisation (1‑à‑1)
+    palettisation = db.relationship(
+        "Palettisation",
+        back_populates="article",
+        uselist=False,
+        cascade="all, delete-orphan"
     )

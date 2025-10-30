@@ -6,3 +6,4 @@ from .articles import Article
 from .marques import Marque
 from .fournisseur import Fournisseur
 from .composition import ArticleComposition
+from .palettisation import Palettisation

@@ -6,6 +6,7 @@ from app.modules.articles.schemas.unite import UniteSchema
 from app.modules.articles.schemas.category import CategorySchema
 from app.modules.articles.schemas.fournisseur import FournisseurSchema
 from app.modules.articles.schemas.composition import ArticleCompositionSchema
+from app.modules.articles.schemas.palettisation import PalettisationReadSchema
 from marshmallow import fields
 
 class ArticleReadSchema(BaseSchema):
@@ -20,7 +21,8 @@ class ArticleReadSchema(BaseSchema):
     unite = ma.Nested(UniteSchema, only=["id", "code"])
     category = ma.Nested(CategorySchema, only=["id", "name"])
     fournisseur = ma.Nested(FournisseurSchema, only=["id", "nom"])
-
+    palettisation = ma.Nested(PalettisationReadSchema, dump_only=True, only=["nb_colis_par_couche", "nb_couches_par_palette"])
+    
     # Relations composantes
     compositions = ma.Nested(ArticleCompositionSchema, many=True, dump_only=True)
 
