@@ -8,6 +8,7 @@ class CaracteristiqueArticle(BaseModel):
     pcb = db.Column(db.Integer)
     ean = db.Column(db.String(20))
     duree_vie_jours = db.Column(db.Integer)
+    conditionnement_a_chaud = db.Column(db.Boolean, default=False)
     id_unite = db.Column(db.Integer, db.ForeignKey("unites.id"))
 
     article = db.relationship("Article", back_populates="caracteristique")

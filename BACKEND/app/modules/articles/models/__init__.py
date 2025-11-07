@@ -8,3 +8,5 @@ from .fournisseur import Fournisseur
 from .composition import ArticleComposition
 from .palettisation import Palettisation
 from .caracteristique_article import CaracteristiqueArticle
+from .stock import Stock
+from .mouvement_stock import MouvementStock

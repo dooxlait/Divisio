@@ -41,3 +41,10 @@ class Article(BaseModel):
         back_populates="article",
         cascade="all, delete-orphan"
     )
+
+    # Relation 1-à-n avec Stock (un article peut avoir plusieurs lots)
+    stocks = db.relationship(
+        "Stock",
+        back_populates="article",
+        cascade="all, delete-orphan"
+    )

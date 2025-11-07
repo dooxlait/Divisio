@@ -337,6 +337,41 @@ def rajouter_information_carton(df):
     except Exception as e:
         db.session.rollback()
         raise RuntimeError(f"Erreur lors de l'ajout des informations du fournisseur de carton : {str(e)}")
+    
+def rajouter_information_conditionnement_a_chaud(df):
+    """ Récupère un dataframe et ajoute les informations de conditionnement à chaud aux articles existants en base."""
+    print(f'[INFO] Ajout des informations de conditionnement à chaud aux articles.')
+    try:
+        df = df.dropna(how="all")
+        df.columns = df.columns.str.strip()
+        df["CODE ARTICLE"] = df["CODE ARTICLE"].astype(str).str.strip()
+        articles_modifies = []
+
+        for idx, row in df.iterrows():
+            code_article = row.get("CODE ARTICLE")
+            conditionnement_value = row.get("CONDI_A_CHAUD")
+            if pd.isna(code_article) or pd.isna(conditionnement_value):
+                print(f"[WARN] Ligne {idx} ignorée : CODE ARTICLE ou CONDITIONNEMENT A CHAUD manquant.")
+                continue
+
+            article = Article.query.filter_by(code=str(code_article)).first()
+            if not article:
+                print(f"[WARN] Article avec code '{code_article}' non trouvé en base.")
+                continue
+
+            if not article.caracteristique:
+                caracteristique = CaracteristiqueArticle(id_article=article.id)
+                article.caracteristique = caracteristique
+
+            article.caracteristique.conditionnement_a_chaud = bool(conditionnement_value)
+            articles_modifies.append(article)
+
+        if articles_modifies:
+            db.session.commit()
+        return len(articles_modifies)
+    except Exception as e:
+        db.session.rollback()
+        raise RuntimeError(f"Erreur lors de l'ajout des informations de conditionnement à chaud : {str(e)}")
 
 def convertir_en_articles(df):
     """Transforme un DataFrame en liste d'objets Article validés."""
@@ -538,6 +573,7 @@ def enrichir_template(fichier):
         count_relation = etablir_relation_entre_article(df_enrichi)
         count_palettisation = etablir_plan_palettisation(df_enrichi)
         count_caracteristique = ecrire_informations_caracteristiques_article(df_enrichi)
+        count_conditionnement = rajouter_information_conditionnement_a_chaud(df_enrichi)
         total = count_marque + count_pot
         return {
             "total": total,
@@ -549,7 +585,8 @@ def enrichir_template(fichier):
             "count_carton": count_carton,
             "count_relation": count_relation,
             "count_palettisation": count_palettisation,
-            "count_caracteristique": count_caracteristique
+            "count_caracteristique": count_caracteristique,
+            "count_conditionnement": count_conditionnement
         }
     except Exception as e:
         raise RuntimeError(f"Erreur lors de la génération du template : {str(e)}")

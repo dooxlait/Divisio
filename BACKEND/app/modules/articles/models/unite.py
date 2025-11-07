@@ -8,10 +8,11 @@ class Unite(BaseModel):
     """
     __tablename__ = 'unites'
 
-    code = db.Column(db.String(100), nullable=False, unique=True) # Code unique de l'unité
-    libelle = db.Column(db.String(255), nullable=True) # Libellé descriptif de l'unité
-    type_unite = db.Column(db.String(50), nullable=True) # Type d'unité (ex: poids, volume, longueur, etc.)
-    description = db.Column(db.Text, nullable=True) # Description détaillée de l'unité
+    code = db.Column(db.String(100), nullable=False, unique=True)
+    libelle = db.Column(db.String(255), nullable=True)
+    type_unite = db.Column(db.String(50), nullable=True)
+    description = db.Column(db.Text, nullable=True)
 
     # Relations
     articles = db.relationship("Article", back_populates="unite")
+    stocks = db.relationship("Stock", back_populates="unite", cascade="all, delete-orphan")
