@@ -5,6 +5,7 @@ import os
 from app.common.response.response import success_response, error_response
 from app.modules.articles.services import create_article_by_list, lire_articles, export_to_excel, enrichir_template
 from app.modules.articles.schemas.article import ArticleSchema, ArticleReadSchema
+from app.modules.articles.services.category_service import get_article_by_categorie
 from app.modules.articles.services.article_composition import get_articles_by_caracteristique
 from app.core.config import Config
 from app.common.helper.parse_helper import parse_filter_params
@@ -98,6 +99,23 @@ def filter_articles_by_caracteristique():
         raw_params = request.args.to_dict()
         filter_params = parse_filter_params(raw_params)
         articles = get_articles_by_caracteristique(**filter_params)
+        schema = ArticleReadSchema(many=True)
+        articles_data = schema.dump(articles)
+        return success_response(
+            data={"articles": articles_data},
+            message="Articles filtrés récupérés avec succès",
+            status_code=200
+        )
+    except Exception as e:
+        return error_response(f"Erreur lors du filtrage des articles : {str(e)}", 500)
+    
+@article_bp.route("/filter-by-categorie", methods=["GET"])
+def filter_articles_by_categorie():
+    try:
+        raw_params = request.args.to_dict()
+        filter_params = parse_filter_params(raw_params)
+        
+        articles = get_article_by_categorie(**filter_params)
         schema = ArticleReadSchema(many=True)
         articles_data = schema.dump(articles)
         return success_response(

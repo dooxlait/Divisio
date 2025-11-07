@@ -31,7 +31,7 @@ def get_articles_by_caracteristique(**kwargs):
     Récupère les articles filtrés selon les attributs de CaracteristiqueArticle.
     
     Exemple d'utilisation :
-        get_articles_by_caracteristique(conditionnement_a_chaud=True, pcb=5)
+        get_articles_by_caracteristique(<url>?conditionnement_a_chaud=True, pcb=5)
     """
     query = Article.query.join(Article.caracteristique)
     
@@ -41,6 +41,7 @@ def get_articles_by_caracteristique(**kwargs):
             query = query.filter(column == value)
     
     return query.all()
+
 
 def rajoute_dlc_dgr_aux_articles(df):
     """
@@ -60,22 +61,25 @@ def rajoute_dlc_dgr_aux_articles(df):
             continue  # Article non trouvé, on passe au suivant
 
         # Création ou mise à jour de la caractéristique
-        # On peut vérifier si une caractéristique existe déjà pour éviter doublons
-        carac = CaracteristiqueArticle.query.filter_by(article_id=article.id).first()
+        carac = CaracteristiqueArticle.query.filter_by(id_article=article.id).first()
         if not carac:
-            carac = CaracteristiqueArticle(article_id=article.id)
+            carac = CaracteristiqueArticle(id_article=article.id)
 
         # Mise à jour des champs
-        carac.dlc = dlc
-        carac.dgr = dgr
+        carac.DLC = dlc
+        carac.DGR = dgr
 
-        # Ajout explicite à la session si ce n'est pas déjà fait
+        # Ajout à la session si ce n'est pas déjà fait
         if carac not in db.session:
             db.session.add(carac)
 
-        # Ajout à la relation de l'article (optionnel, si la relation est définie)
-        if carac not in article.caracteristique:
-            article.caracteristique.append(carac)
+        # Vérification avant d'ajouter à la relation si lazy="dynamic"
+        if hasattr(article.caracteristique, 'append'):
+            if carac not in article.caracteristique:
+                article.caracteristique.append(carac)
+        else:
+            # Si la relation est dynamic (query object), ajouter directement via la session suffit
+            pass
 
         updated_count += 1
 

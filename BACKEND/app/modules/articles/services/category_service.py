@@ -1,5 +1,5 @@
 from app.core.extensions import db
-from app.modules.articles.models import Category
+from app.modules.articles.models import Category, Article
 
 def readAllCategories():
     """
@@ -35,3 +35,23 @@ def createCategory(category):
     db.session.add(category)
     db.session.commit()
     return category
+
+def get_article_by_categorie(**kwargs):
+    """
+    Récupère les articles filtrés selon les attributs de CategorieArticle.
+    
+    Exemple d'utilisation :
+        get_article_by_categorie(nom="Boissons", actif=True)
+    """
+
+
+    query = db.session.query(Article).join(Article.category)
+
+    for attr, value in kwargs.items():
+        # Vérifie que l'attribut existe dans le modèle Category
+        if hasattr(Category, attr):
+            query = query.filter(getattr(Category, attr) == value)
+        else:
+            raise AttributeError(f"L'attribut '{attr}' n'existe pas dans Category")
+
+    return query.all()

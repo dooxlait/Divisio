@@ -5,12 +5,11 @@ from app.core.extensions import db
 from app.common.base.base_model import BaseModel
 import enum
 
-
 class TypeMouvement(enum.Enum):
     ENTREE = "ENTREE"
     SORTIE = "SORTIE"
     AJUSTEMENT = "AJUSTEMENT"
-
+    MOUVEMENT = "MOUVEMENT INTERNE"
 
 class MouvementStock(BaseModel):
     __tablename__ = "mouvements_stock"
@@ -38,7 +37,9 @@ class MouvementStock(BaseModel):
     utilisateur = db.Column(db.String(100), nullable=True)
 
     # Relation vers Stock
-    stock = db.relationship(
-        "Stock",
-        back_populates="mouvements"
-    )
+    stock = db.relationship("Stock", back_populates="mouvements")
+
+    # Relation vers Unite (facultatif, si tu veux l’unité du mouvement)
+    id_unite = db.Column(db.Integer, db.ForeignKey("unites.id"), nullable=True)
+    unite = db.relationship("Unite", back_populates="mouvements_stock")
+

@@ -4,8 +4,28 @@ from flask import Blueprint, request, jsonify
 from app.common.response.response import success_response, error_response
 from app.modules.articles.services.stock_service import *
 from app.modules.articles.schemas import StockSchema
+from app.common.helper.excel_helper import *
 
 stock_bp = Blueprint('stock', __name__, url_prefix="/stocks")
+
+@stock_bp.route("/listearticlestock", methods=["GET"])
+def create_liste_article_stock():
+    """ Route pour créer la liste des articles en stock. """
+    
+    try:
+        liste_stock = creer_liste_article_stock()
+        schema = StockSchema(many=True)
+        stock_data = schema.dump(liste_stock)
+        return success_response(
+            data={"liste_stock": stock_data},
+            message="Liste des articles en stock créée avec succès",
+            status_code=200
+        )
+    except Exception as e:
+        return error_response(
+            message=f"Erreur lors de la création de la liste des articles en stock: {str(e)}",
+            status_code=500
+        )
 
 @stock_bp.route("/", methods=["POST"])
 def create_stock():
@@ -31,6 +51,38 @@ def create_stock():
             message=f"Erreur lors de la création du stock: {str(e)}",
             status_code=500
         )
+        
+@stock_bp.route('/stockbyexcel', methods=['POST'])
+def ecrire_stock_par_excel():
+    """ Route pour écrire des entrées de stock à partir d'un fichier Excel. """
+    
+    if 'file' not in request.files:
+        return error_response(
+            message="Aucun fichier fourni",
+            status_code=400
+        )
+    file = request.files['file']
+    if file.filename == '':
+        return error_response(
+            message="Nom de fichier invalide",
+            status_code=400
+        )
+    try:
+        df_stock = lire_excel(file)
+        stocks = ecrire_stock_par_excel(df_stock)
+        schema = StockSchema(many=True)
+        stocks_data = schema.dump(stocks)
+        return success_response(
+            data={"stocks": stocks_data},
+            message="Stocks écrits avec succès à partir du fichier Excel",
+            status_code=201
+        )
+    except Exception as e:
+        return error_response(
+            message=f"Erreur lors de l'écriture des stocks à partir du fichier Excel: {str(e)}",
+            status_code=500
+        )
+        
 @stock_bp.route("/", methods=["GET"])
 def get_all_stocks():
     """ Route pour récupérer toutes les entrées de stock. """
