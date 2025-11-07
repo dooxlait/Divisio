@@ -1,7 +1,7 @@
 # BACKEND\app\modules\articles\services\stock_service.py
 import pandas as pd
 
-from app.modules.articles.models import Stock, Article, Category
+from app.modules.articles.models import Stock, Article, Category, MouvementStock, TypeMouvement
 from app.core.extensions import db
 
 def ecrire_en_stock(**data):
@@ -13,39 +13,108 @@ def ecrire_en_stock(**data):
     db.session.commit()
     return new_stock
 
-def ecrire_stock_par_excel(df):
-    """
-    Service pour écrire des entrées de stock à partir d'un fichier Excel.
-    """
+def mise_a_jour_stock_optimisee(df, utilisateur=None):
+    # -------------------------
+    # Nettoyage du DataFrame
+    # -------------------------
     df = df.dropna(how="all")
     df.columns = df.columns.str.strip()
     df["CODE ARTICLE"] = df["CODE ARTICLE"].astype(str).str.strip()
-    stocks = []
-    for _, row in df.iterrows():
-        code_article = row.get("CODE ARTICLE")
-        # trouver l'article correspondant dans la base de données
-        article = Article.query.filter_by(code=code_article).first()
-        if not article:
-            print(f'Code article inconnu pour la ligne: {row} / {row.get("CODE ARTICLE")}')
-            continue
-        # test de présence de la quantité
-        quantite = row.get("QUANTITE", 0)
-        emplacement = row.get("EMPLACEMENT", "Inconnu")
-        dlc = row.get("DLC", None)
+    df["DLC"] = pd.to_datetime(df["DLC"], format="%d/%m/%Y", errors="coerce")
+    df = df.sort_values(by=["CODE ARTICLE", "DLC"], na_position="last").reset_index(drop=True)
+
+    # -------------------------
+    # Précharger articles et stocks
+    # -------------------------
+    articles_dict = {a.code: a for a in Article.query.all()}
+    stocks_dict = {(s.code_article, s.dlc): s for s in Stock.query.all()}
+
+    mouvements_enregistres = []
+
+    # -------------------------
+    # Boucle sur le DataFrame (itertuples = plus rapide)
+    # -------------------------
+    for row in df.itertuples(index=False):
+        code = getattr(row, "CODE ARTICLE")
+        dlc = getattr(row, "DLC")
+        quantite = getattr(row, "QUANTITE", 0)
+        emplacement = getattr(row, "EMPLACEMENT", "Inconnu")
+
+        # Vérifications rapides
         if pd.isna(quantite) or quantite <= 0:
-            print(f'Quantité invalide pour la ligne: {row} / {quantite}')
             continue
-        if pd.isna(emplacement):
-            emplacement = "Inconnu"
-            print(f'Emplacement manquant pour la ligne: {row}, défini sur "Inconnu"')
-        if pd.isna(dlc):
-            dlc = None
-            print(f'DLC manquante pour la ligne: {row}, définie sur None')
-        
-        existing_stock = Stock.query.filter_by(article_id=article.id, dlc=dlc).first()
-        # le stock existe déjà, on met à jour la quantité
-        if existing_stock:
-            a terminer...
+        article = articles_dict.get(code)
+        if not article:
+            print(f"Article inconnu : {code}")
+            continue
+
+        cle_stock = (code, dlc)
+        stock_existant = stocks_dict.get(cle_stock)
+
+        if stock_existant:
+            # Stock existant → déterminer type de mouvement
+            if stock_existant.quantite == quantite and stock_existant.emplacement == emplacement:
+                continue  # Aucun changement
+            elif stock_existant.quantite == quantite and stock_existant.emplacement != emplacement:
+                # Mouvement interne
+                mouvement = MouvementStock(
+                    id_stock=stock_existant.id,
+                    type_mouvement=TypeMouvement.MOUVEMENT,
+                    quantite=quantite,
+                    motif=f"Déplacement interne vers {emplacement}",
+                    utilisateur=utilisateur
+                )
+                stock_existant.emplacement = emplacement
+            elif stock_existant.quantite < quantite:
+                # Entrée
+                delta = quantite - stock_existant.quantite
+                mouvement = MouvementStock(
+                    id_stock=stock_existant.id,
+                    type_mouvement=TypeMouvement.ENTREE,
+                    quantite=delta,
+                    motif="Entrée en stock",
+                    utilisateur=utilisateur
+                )
+                stock_existant.quantite = quantite
+            else:
+                # Sortie
+                delta = stock_existant.quantite - quantite
+                mouvement = MouvementStock(
+                    id_stock=stock_existant.id,
+                    type_mouvement=TypeMouvement.SORTIE,
+                    quantite=delta,
+                    motif="Sortie de stock",
+                    utilisateur=utilisateur
+                )
+                stock_existant.quantite = quantite
+
+            db.session.add(mouvement)
+            mouvements_enregistres.append(mouvement)
+
+        else:
+            # Nouveau stock
+            nouveau_stock = Stock(
+                code_article=code,
+                dlc=dlc,
+                quantite=quantite,
+                emplacement=emplacement
+            )
+            db.session.add(nouveau_stock)
+            db.session.flush()  # récupérer ID avant ajout du mouvement
+
+            mouvement = MouvementStock(
+                id_stock=nouveau_stock.id,
+                type_mouvement=TypeMouvement.ENTREE,
+                quantite=quantite,
+                motif="Création de stock",
+                utilisateur=utilisateur
+            )
+            db.session.add(mouvement)
+            mouvements_enregistres.append(mouvement)
+
+    # Commit final
+    db.session.commit()
+    return mouvements_enregistres
 
             
         

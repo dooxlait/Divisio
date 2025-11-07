@@ -9,4 +9,4 @@ from .composition import ArticleComposition
 from .palettisation import Palettisation
 from .caracteristique_article import CaracteristiqueArticle
 from .stock import Stock
-from .mouvement_stock import MouvementStock
+from .mouvement_stock import MouvementStock, TypeMouvement
