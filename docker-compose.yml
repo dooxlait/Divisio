@@ -37,20 +37,21 @@ services:
         flask run --host=0.0.0.0 --reload
       "
 
-  frontend:
-    build: ./FRONTEND/webapp
-    container_name: frontend
-    ports:
-      - "3000:3000"
-    command: npm run dev
-    develop:
-      watch:
-        - action: sync
-          path: ./FRONTEND/webapp
-          target: /app
-          ignore:
-            - node_modules/
-        - action: rebuild
-          path: ./FRONTEND/webapp/package.json
-    depends_on:
-      - backend
+
+#  frontend:
+#    build: ./FRONTEND/webapp
+#    container_name: frontend
+#    ports:#
+#      - "3000:3000"
+#    command: npm run dev
+#    develop:
+#      watch:
+#        - action: sync
+#          path: ./FRONTEND/webapp
+#          target: /app
+#          ignore:
+#            - node_modules/
+#        - action: rebuild
+#          path: ./FRONTEND/webapp/package.json
+#    depends_on:
+#      - backend

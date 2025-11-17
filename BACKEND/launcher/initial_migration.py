@@ -165,7 +165,7 @@ with app.app_context():
         {"code": "MP", "name": "Matière première", "description": "Matières premières utilisées dans la production des articles finis."},
         {"code": "CF", "name": "Consommables / Fournitures", "description": "Articles utilisés dans le processus de production mais qui ne font pas partie du produit final."},
         {"code": "PF", "name": "Produit fini", "description": "Articles finis prêts à être vendus aux clients."},
-        {"code": "PSF", "name": "Produit semi fini", "description": "Articles necessitant une ou plusieurs opérations avant d'être finis."},
+        {"code": "PSF", "name": "Semi-fini", "description": "Articles necessitant une ou plusieurs opérations avant d'être finis."},
         {"code": "EMB", "name": "Emballage", "description": "Matériaux d'emballage utilisés pour protéger et présenter les produits finis."},
         {"code": "DIV", "name": "Divers", "description": "Articles divers qui ne rentrent pas dans les autres catégories."},
     ]

@@ -12,6 +12,7 @@ from .modules.hr import register_employee_routes
 from .modules.API import register_API_routes
 from .modules.articles import register_article_routes
 from .modules.statistique import register_statistique_routes
+from .modules.production import register_production_routes
 
 def create_app(config_class=DevelopmentConfig):
     """" Application factory """
@@ -38,6 +39,7 @@ def create_app(config_class=DevelopmentConfig):
     register_API_routes(app, url_prefix=f"{api_prefix}/API")
     register_article_routes(app, url_prefix=f"{api_prefix}/article")
     register_statistique_routes(app, url_prefix=f"{api_prefix}/statistique")
+    register_production_routes(app, url_prefix=f"{api_prefix}/production")
 
 
 

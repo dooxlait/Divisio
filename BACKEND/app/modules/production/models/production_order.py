@@ -8,7 +8,6 @@ class ProductionOrder(BaseModel):
     __tablename__ = "production_orders"
 
     reference = db.Column(db.String(50), nullable=False, unique=True)  # N° d’OF
-    product_name = db.Column(db.String(100), nullable=False)           # ex: "Yaourt nature 125g"
     quantity_planned = db.Column(db.Integer, nullable=False)
     quantity_produced = db.Column(db.Integer, nullable=True)
 
@@ -18,13 +17,10 @@ class ProductionOrder(BaseModel):
     start_date = db.Column(db.DateTime, nullable=True)
     end_date = db.Column(db.DateTime, nullable=True)
 
-    # --- Lien vers process théorique ---
-    process_id = db.Column(db.String(36), ForeignKey("processes.id"), nullable=False)
-    process = db.relationship("Process", backref=db.backref("production_orders", lazy=True))
-
-    # --- Lien organisation ---
-    site_id = db.Column(db.String(36), ForeignKey("sites.id"), nullable=False)
-    division_id = db.Column(db.String(36), ForeignKey("divisions.id"), nullable=False)
+    # --- Lien vers Article ---
+    article_id = db.Column(db.String(36), db.ForeignKey("articles.id"), nullable=False)
+    article = db.relationship("Article", back_populates="production_orders")
 
     def __repr__(self):
         return f"<ProductionOrder {self.reference} - {self.product_name} ({self.status})>"
+

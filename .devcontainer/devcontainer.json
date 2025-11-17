@@ -1,0 +1,17 @@
+{
+  "name": "Flask Backend Dev Container",
+  "dockerComposeFile": ["../docker-compose.yml"],
+  "service": "backend",
+  "workspaceFolder": "/app",
+  "extensions": [
+    "ms-python.python",
+    "ms-azuretools.vscode-docker"
+  ],
+  "settings": {
+    "python.pythonPath": "/usr/local/bin/python",
+    "python.analysis.extraPaths": ["/app"]
+  },
+  "forwardPorts": [5000],
+  "postCreateCommand": "pip install --no-cache-dir -r requirements.txt",
+  "remoteUser": "root"
+}
