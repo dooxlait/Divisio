@@ -1,3 +1,4 @@
 # BACKEND\app\modules\production\schemas\production_order\__init__.py
 
 from .production_order_schema import ProductionOrderSchema
+from .production_order_create_schema import ProductionOrderCreateSchema

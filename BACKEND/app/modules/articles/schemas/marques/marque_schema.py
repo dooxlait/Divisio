@@ -3,7 +3,8 @@
 from marshmallow import pre_load
 from app.common.base.base_schema import BaseSchema
 from app.core.extensions import db
-from app.modules.articles.models.marques import Marque  # chemin corrigé
+from app.modules.articles.models.marques import Marque
+
 
 class MarqueSchema(BaseSchema):
     """
@@ -17,7 +18,12 @@ class MarqueSchema(BaseSchema):
         sqla_session = db.session
 
     @pre_load
-    def uppercase_nom(self, data, **kwargs):
-        if "nom" in data and isinstance(data["nom"], str):
+    def uppercase_nom(self, data, many: bool = False, **kwargs):
+        # Protection contre le bug Marshmallow (data = ... quand many=True)
+        if not isinstance(data, dict):
+            return data
+
+        if data.get("nom") and isinstance(data["nom"], str):
             data["nom"] = data["nom"].upper().strip()
+
         return data

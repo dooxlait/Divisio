@@ -42,48 +42,78 @@ def get_articles_by_caracteristique(**kwargs):
     
     return query.all()
 
+def rajouter_gamme_aux_articles(df):
+    updated_count = 0
+    errors = []
+
+    for _, row in df.iterrows():
+        code_article = row['Référence']
+        gamme = row.get('Gamme')
+
+        article = Article.query.filter_by(code=code_article).first()
+        if not article:
+            continue
+
+        # 1. Vérifier si une caractéristique existe déjà
+        carac = article.caracteristique
+
+        # 2. Si elle n'existe pas, en créer une
+        if not carac:
+            carac = CaracteristiqueArticle(id_article=article.id)
+            db.session.add(carac)
+
+        # 3. Mettre à jour la gamme
+        carac.gamme = gamme
+
+        updated_count += 1
+
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        errors.append(str(e))
+
+    return updated_count
 
 def rajoute_dlc_dgr_aux_articles(df):
     """
     Met à jour les articles avec les valeurs DLC et DGR du DataFrame.
-    Retourne le nombre de caractéristiques mises à jour.
+    Retourne le nombre de caractéristiques mises à jour et les erreurs éventuelles.
     """
     updated_count = 0
+    errors = []
 
     for _, row in df.iterrows():
         code_article = row['Référence']
         dlc = row.get('DLC')
         dgr = row.get('DGR')
 
-        # Récupération de l'article
         article = Article.query.filter_by(code=code_article).first()
         if not article:
-            continue  # Article non trouvé, on passe au suivant
+            continue
 
-        # Création ou mise à jour de la caractéristique
         carac = CaracteristiqueArticle.query.filter_by(id_article=article.id).first()
         if not carac:
             carac = CaracteristiqueArticle(id_article=article.id)
 
-        # Mise à jour des champs
         carac.DLC = dlc
         carac.DGR = dgr
 
-        # Ajout à la session si ce n'est pas déjà fait
         if carac not in db.session:
             db.session.add(carac)
 
-        # Vérification avant d'ajouter à la relation si lazy="dynamic"
         if hasattr(article.caracteristique, 'append'):
             if carac not in article.caracteristique:
                 article.caracteristique.append(carac)
-        else:
-            # Si la relation est dynamic (query object), ajouter directement via la session suffit
-            pass
 
         updated_count += 1
 
-    # Commit de toutes les modifications
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        errors.append(str(e))
+
     return updated_count
+
     

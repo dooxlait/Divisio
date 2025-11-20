@@ -1,6 +1,8 @@
 import pandas as pd
 import math
 from marshmallow import ValidationError
+from typing import Dict, List, Optional, Any
+from sqlalchemy import and_
 from app.core.extensions import db
 from app.modules.articles.models import Unite, Category, Article, Marque, Fournisseur, ArticleComposition, Palettisation, CaracteristiqueArticle
 from app.modules.articles.schemas.article.article_schema import ArticleSchema
@@ -546,6 +548,47 @@ def lire_articles():
     print("[INFO] Lecture de tous les articles en base de données.")
     try:
         return Article.query.all()
+    except Exception as e:
+        raise RuntimeError(f"Erreur lors de la lecture des articles : {str(e)}")
+
+def lire_articles_filter(filters: Optional[Dict[str, Any]] = None) -> List[Article]:
+    """
+    Lit les articles en base de données avec filtres optionnels.
+
+    Exemples d'utilisation :
+        lire_articles()                              → tous les articles
+        lire_articles(filters={"code": "PF123"})     → un seul article par code
+        lire_articles(filters={"is_active": True})   → tous les articles actifs
+        lire_articles(filters={"code": "PF123", "is_active": True})
+
+    Args:
+        filters: dictionnaire de filtres (clé = nom du champ, valeur = valeur recherchée)
+
+    Returns:
+        List[Article]: liste d'articles (1 seul si filtre par code, plusieurs sinon)
+    """
+    print("[INFO] Lecture des articles en base de données avec filtres :", filters or "aucun")
+
+    query = Article.query
+
+    if filters:
+        # Construction dynamique des conditions
+        conditions = []
+        for key, value in filters.items():
+            if hasattr(Article, key):
+                conditions.append(getattr(Article, key) == value)
+            else:
+                print(f"[WARN] Filtre ignoré : le champ '{key}' n'existe pas sur Article")
+        
+        if conditions:
+            query = query.filter(and_(*conditions))
+
+    try:
+        results = query.all()
+        if filters and "code" in filters:
+            # Si on cherche par code → on s'attend à 0 ou 1 résultat
+            return results[0] if results else None
+        return results
     except Exception as e:
         raise RuntimeError(f"Erreur lors de la lecture des articles : {str(e)}")
 

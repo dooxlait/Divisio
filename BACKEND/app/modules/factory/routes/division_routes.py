@@ -10,14 +10,15 @@ from app.common.response.response import success_response, error_response
 
 division_bp = Blueprint("division", __name__, url_prefix="/divisions")
 
-@division_bp.route("/divisions", methods=["GET"])
+@division_bp.route("/division", methods=["GET"])
 def list_divisions():
-    # Récupération des query params
-    div_type = request.args.get("type")   # ex: ?type=atelier
-    sort = request.args.get("sort")       # ex: ?sort=name
+    # Récupération dynamique de tous les query params
+    filters = request.args.to_dict()  # ex: ?type=atelier&name=Production → {"type": "atelier", "name": "Production"}
+    sort = filters.pop("sort", None)  # on retire 'sort' du dictionnaire si présent
 
     try:
-        divisions = get_all_divisions(div_type=div_type, sort=sort)  # on délègue la logique au service
+        # Appel de la fonction dynamique avec filtres et tri
+        divisions = get_all_divisions(filters=filters, sort=sort)
         schema = DivisionSchema(many=True)
 
         if not divisions:

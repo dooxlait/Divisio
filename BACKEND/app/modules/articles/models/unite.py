@@ -17,3 +17,4 @@ class Unite(BaseModel):
     articles = db.relationship("Article", back_populates="unite")
     stocks = db.relationship("Stock", back_populates="unite", cascade="all, delete-orphan")
     mouvements_stock = db.relationship("MouvementStock", back_populates="unite", cascade="all, delete-orphan")
+    production_orders = db.relationship("ProductionOrder", back_populates="unite")

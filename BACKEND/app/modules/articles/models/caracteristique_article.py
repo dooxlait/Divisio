@@ -11,5 +11,5 @@ class CaracteristiqueArticle(BaseModel):
     DGR = db.Column(db.Integer)
     conditionnement_a_chaud = db.Column(db.Boolean, default=False)
     id_unite = db.Column(db.Integer, db.ForeignKey("unites.id"))
-
+    gamme = db.Column(db.String(100), nullable=True)
     article = db.relationship("Article", back_populates="caracteristique")
