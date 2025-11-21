@@ -414,7 +414,7 @@ def convertir_en_articles(df):
             "code": str(row["code"]),
             "designation": str(row["designation"]),
             "is_active": row.get("is_active") if not pd.isna(row.get("is_active")) else True,
-            "id_unite": str(unite_id) if unite_id else None,
+            "id_unite": str(unite_id) if unite_id else None,      # idem pour l'unité
             "id_categorie": str(categorie_id) if categorie_id else None,
         }
 

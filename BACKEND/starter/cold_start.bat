@@ -57,10 +57,10 @@ IF EXIST "launcher\initial_migration.py" (
     call venv\Scripts\activate.bat
 
     echo [INFO] Initialisation de la base FACTORY
-    python -m launcher.initial_migration_FACTORY
+    python -m launcher.initial_migration
 
 ) ELSE (
-    echo [AVERTISSEMENT] launcher\initial_migration_FACTORY.py introuvable. Etape passee.
+    echo [AVERTISSEMENT] launcher\initial_migrationpy introuvable. Etape passee.
 )
     
 
