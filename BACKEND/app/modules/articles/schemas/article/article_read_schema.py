@@ -20,25 +20,36 @@ class ArticleReadSchema(BaseSchema):
     unite = ma.Nested(UniteSchema, only=["id", "code"])
     category = ma.Nested(CategorySchema, only=["id", "name"])
     fournisseur = ma.Nested(FournisseurSchema, only=["id", "nom"])
+    
     palettisation = ma.Nested(
         PalettisationReadSchema, 
         dump_only=True, 
         only=["nb_colis_par_couche", "nb_couches_par_palette"]
     )
+    
     caracteristique = ma.Nested(
         CaracteristiqueArticleSchema, 
         dump_only=True, 
         exclude=["id_article"]
     )
 
-    # Relations composantes
-    compositions = ma.Nested(ArticleCompositionSchema, many=True, dump_only=True)
+    # Relations composantes (Nouveau nom)
+    composition_enfants = ma.Nested(ArticleCompositionSchema, many=True, dump_only=True)
 
-    # Clés étrangères UUID sérialisées en string
+    # Clés étrangères
     id_categorie = fields.String()
     id_unite = fields.String()
     id_marque = fields.String()
     id_fournisseur = fields.String()
+
+    # Champs calculés / Propriétés
+    type_article = fields.String()
+    dlc = fields.Integer(attribute="dlc") 
+    
+    # --- CORRECTION ICI ---
+    # Il faut déclarer ce champ pour que Marshmallow puisse le lire depuis le modèle
+    # et pour que le "only=['unite_code']" de l'autre schéma fonctionne.
+    unite_code = fields.String(dump_only=True)
 
     class Meta:
         model = Article
@@ -48,6 +59,4 @@ class ArticleReadSchema(BaseSchema):
 
     @post_dump
     def remove_none_fields(self, data, **kwargs):
-        """Supprime toutes les clés dont la valeur est None."""
         return {k: v for k, v in data.items() if v is not None}
-

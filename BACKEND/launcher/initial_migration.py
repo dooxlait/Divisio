@@ -237,9 +237,11 @@ with app.app_context():
 
     # --- Unités ---
     unite_data = [
+        {"code": "g/100L", "libelle": "gramme/100Litre", "type_unite": "concentration", "description": "Unité de concentration massique, exprimant la masse d'une substance pour 100 litres de solution."},
+        {"code": "g/L", "libelle": "gramme/Litre", "type_unite": "concentration", "description": "Unité de concentration massique, exprimant la masse d'une substance par litre de solution."},
         {"code": "L", "libelle": "Litre", "type_unite": "volume", "description": "Unité de volume utilisée pour le lait et les autres liquides."},
-        {"code": "KG", "libelle": "Kilogramme", "type_unite": "poids", "description": "Unité de masse utilisée pour les ingrédients solides et les emballages."},
-        {"code": "G", "libelle": "Gramme", "type_unite": "poids", "description": "Sous-unité du kilogramme pour mesurer de petites quantités."},
+        {"code": "Kg", "libelle": "Kilogramme", "type_unite": "poids", "description": "Unité de masse utilisée pour les ingrédients solides et les emballages."},
+        {"code": "g", "libelle": "Gramme", "type_unite": "poids", "description": "Sous-unité du kilogramme pour mesurer de petites quantités."},
         {"code": "PIECE", "libelle": "Pièce", "type_unite": "comptage", "description": "Unité utilisée pour compter les articles individuels comme les pots ou bouteilles."},
         {"code": "COLIS", "libelle": "Colis", "type_unite": "conditionnement", "description": "Unité correspondant à un carton regroupant plusieurs pièces."},
         {"code": "PALETTE", "libelle": "Palette", "type_unite": "logistique", "description": "Unité logistique correspondant à un ensemble de colis prêts pour l’expédition."},

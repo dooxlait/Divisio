@@ -1,8 +1,8 @@
 """Auto migration
 
-Revision ID: 5eb0fa63dad3
+Revision ID: 9a45e598cf50
 Revises: 
-Create Date: 2025-11-19 15:47:11.748985
+Create Date: 2025-11-21 11:47:29.099432
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '5eb0fa63dad3'
+revision = '9a45e598cf50'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -82,14 +82,6 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name')
     )
-    op.create_table('production_recipes',
-    sa.Column('name', sa.String(length=100), nullable=False),
-    sa.Column('description', sa.String(length=500), nullable=True),
-    sa.Column('id', sa.String(length=36), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.PrimaryKeyConstraint('id')
-    )
     op.create_table('sites',
     sa.Column('name', sa.String(length=50), nullable=False),
     sa.Column('city', sa.String(length=50), nullable=False),
@@ -117,6 +109,7 @@ def upgrade():
     sa.Column('code', sa.String(length=50), nullable=False),
     sa.Column('designation', sa.String(length=255), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=True),
+    sa.Column('type_article', sa.String(length=20), nullable=True),
     sa.Column('id_categorie', sa.String(length=36), nullable=True),
     sa.Column('id_unite', sa.String(length=36), nullable=True),
     sa.Column('id_marque', sa.String(length=36), nullable=True),
@@ -168,25 +161,28 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('article_compositions',
-    sa.Column('article_id', sa.Integer(), nullable=False),
-    sa.Column('component_id', sa.Integer(), nullable=False),
-    sa.Column('quantity', sa.Float(), nullable=False),
+    sa.Column('article_parent_id', sa.String(length=36), nullable=False),
+    sa.Column('article_enfant_id', sa.String(length=36), nullable=False),
+    sa.Column('quantite', sa.Numeric(precision=12, scale=4), nullable=False),
+    sa.Column('unite_id', sa.String(length=36), nullable=True),
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.ForeignKeyConstraint(['article_id'], ['articles.id'], ),
-    sa.ForeignKeyConstraint(['component_id'], ['articles.id'], ),
+    sa.ForeignKeyConstraint(['article_enfant_id'], ['articles.id'], ),
+    sa.ForeignKeyConstraint(['article_parent_id'], ['articles.id'], ),
+    sa.ForeignKeyConstraint(['unite_id'], ['unites.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('caracteristiques_articles',
-    sa.Column('id_article', sa.String(length=36), nullable=True),
+    sa.Column('id_article', sa.String(length=36), nullable=False),
     sa.Column('pcb', sa.Integer(), nullable=True),
     sa.Column('ean', sa.String(length=20), nullable=True),
     sa.Column('DLC', sa.Integer(), nullable=True),
     sa.Column('DGR', sa.Integer(), nullable=True),
     sa.Column('conditionnement_a_chaud', sa.Boolean(), nullable=True),
-    sa.Column('id_unite', sa.Integer(), nullable=True),
+    sa.Column('etiquette_sur_chaque_colis', sa.Boolean(), nullable=True),
     sa.Column('gamme', sa.String(length=100), nullable=True),
+    sa.Column('id_unite', sa.String(length=36), nullable=True),
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
@@ -237,53 +233,20 @@ def upgrade():
     sa.ForeignKeyConstraint(['id_article'], ['articles.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id_article', 'id')
     )
-    op.create_table('production_orders',
-    sa.Column('reference', sa.String(length=50), nullable=True),
-    sa.Column('article_id', sa.String(length=36), nullable=False),
-    sa.Column('unite_article_id', sa.String(length=36), nullable=False),
-    sa.Column('quantity_planned', sa.Numeric(precision=12, scale=4), nullable=False),
-    sa.Column('quantity_produced', sa.Numeric(precision=12, scale=4), nullable=True),
-    sa.Column('quantity_depreciated', sa.Numeric(precision=12, scale=4), nullable=True),
-    sa.Column('product_DLC', sa.Date(), nullable=True),
-    sa.Column('product_DGR', sa.Date(), nullable=True),
-    sa.Column('fabrication_start_date_planned', sa.Date(), nullable=False),
-    sa.Column('fabrication_start_date_real', sa.Date(), nullable=True),
-    sa.Column('fabrication_end_date_real', sa.Date(), nullable=True),
-    sa.Column('status', sa.String(length=20), nullable=True),
-    sa.Column('priority', sa.String(length=10), nullable=True),
-    sa.Column('notes', sa.Text(), nullable=True),
-    sa.Column('ligne_id', sa.String(length=36), nullable=True),
+    op.create_table('production_recipes',
+    sa.Column('code', sa.String(length=50), nullable=False),
+    sa.Column('name', sa.String(length=100), nullable=False),
+    sa.Column('version', sa.Integer(), nullable=True),
+    sa.Column('is_active', sa.Boolean(), nullable=True),
+    sa.Column('description', sa.String(length=500), nullable=True),
+    sa.Column('article_output_id', sa.String(length=36), nullable=False),
+    sa.Column('taille_lot_ref', sa.Numeric(precision=12, scale=4), nullable=True),
     sa.Column('id', sa.String(length=36), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.ForeignKeyConstraint(['article_id'], ['articles.id'], ),
-    sa.ForeignKeyConstraint(['ligne_id'], ['divisions.id'], ),
-    sa.ForeignKeyConstraint(['unite_article_id'], ['unites.id'], ),
+    sa.ForeignKeyConstraint(['article_output_id'], ['articles.id'], ),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('reference')
-    )
-    op.create_table('recette_ingredients',
-    sa.Column('recette_id', sa.String(length=36), nullable=False),
-    sa.Column('article_id', sa.String(length=36), nullable=False),
-    sa.Column('quantity', sa.Numeric(precision=12, scale=4), nullable=False),
-    sa.Column('unite_id', sa.String(length=36), nullable=False),
-    sa.Column('id', sa.String(length=36), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.ForeignKeyConstraint(['article_id'], ['articles.id'], ),
-    sa.ForeignKeyConstraint(['recette_id'], ['production_recipes.id'], ),
-    sa.ForeignKeyConstraint(['unite_id'], ['unites.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_table('recipe_articles',
-    sa.Column('recipe_id', sa.String(length=36), nullable=False),
-    sa.Column('article_id', sa.String(length=36), nullable=False),
-    sa.Column('id', sa.String(length=36), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=True),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.ForeignKeyConstraint(['article_id'], ['articles.id'], ),
-    sa.ForeignKeyConstraint(['recipe_id'], ['production_recipes.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.UniqueConstraint('code')
     )
     op.create_table('stocks',
     sa.Column('id_article', sa.String(length=36), nullable=False),
@@ -341,6 +304,66 @@ def upgrade():
     sa.ForeignKeyConstraint(['process_step_id'], ['process_steps.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('production_orders',
+    sa.Column('reference', sa.String(length=50), nullable=True),
+    sa.Column('article_id', sa.String(length=36), nullable=False),
+    sa.Column('unite_article_id', sa.String(length=36), nullable=False),
+    sa.Column('recipe_id', sa.String(length=36), nullable=True),
+    sa.Column('batch_number', sa.String(length=50), nullable=True),
+    sa.Column('quantity_planned', sa.Numeric(precision=12, scale=4), nullable=False),
+    sa.Column('quantity_produced', sa.Numeric(precision=12, scale=4), nullable=True),
+    sa.Column('quantity_rejected', sa.Numeric(precision=12, scale=4), nullable=True),
+    sa.Column('product_DLC', sa.Date(), nullable=True),
+    sa.Column('product_DGR', sa.Date(), nullable=True),
+    sa.Column('fabrication_start_date_planned', sa.Date(), nullable=False),
+    sa.Column('fabrication_start_date_real', sa.DateTime(), nullable=True),
+    sa.Column('fabrication_end_date_real', sa.DateTime(), nullable=True),
+    sa.Column('status', sa.String(length=20), nullable=True),
+    sa.Column('priority', sa.String(length=10), nullable=True),
+    sa.Column('notes', sa.Text(), nullable=True),
+    sa.Column('ligne_id', sa.String(length=36), nullable=True),
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.ForeignKeyConstraint(['article_id'], ['articles.id'], ),
+    sa.ForeignKeyConstraint(['ligne_id'], ['divisions.id'], ),
+    sa.ForeignKeyConstraint(['recipe_id'], ['production_recipes.id'], ),
+    sa.ForeignKeyConstraint(['unite_article_id'], ['unites.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('reference')
+    )
+    with op.batch_alter_table('production_orders', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_production_orders_batch_number'), ['batch_number'], unique=False)
+
+    op.create_table('recette_ingredients',
+    sa.Column('recipe_id', sa.String(length=36), nullable=False),
+    sa.Column('article_id', sa.String(length=36), nullable=False),
+    sa.Column('unite_id', sa.String(length=36), nullable=False),
+    sa.Column('quantity', sa.Numeric(precision=12, scale=4), nullable=False),
+    sa.Column('is_proportional', sa.Boolean(), nullable=True),
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.ForeignKeyConstraint(['article_id'], ['articles.id'], ),
+    sa.ForeignKeyConstraint(['recipe_id'], ['production_recipes.id'], ),
+    sa.ForeignKeyConstraint(['unite_id'], ['unites.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('recipe_target_specs',
+    sa.Column('recipe_id', sa.String(length=36), nullable=False),
+    sa.Column('spec_name', sa.String(length=100), nullable=False),
+    sa.Column('spec_unit_id', sa.String(length=36), nullable=False),
+    sa.Column('target_value', sa.Numeric(precision=12, scale=4), nullable=False),
+    sa.Column('target_min', sa.Numeric(precision=12, scale=4), nullable=True),
+    sa.Column('target_max', sa.Numeric(precision=12, scale=4), nullable=True),
+    sa.Column('tolerance', sa.Numeric(precision=12, scale=4), nullable=True),
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.ForeignKeyConstraint(['recipe_id'], ['production_recipes.id'], ),
+    sa.ForeignKeyConstraint(['spec_unit_id'], ['unites.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('production_materials',
     sa.Column('production_order_id', sa.String(length=36), nullable=False),
     sa.Column('material_name', sa.String(length=100), nullable=False),
@@ -390,6 +413,12 @@ def downgrade():
     op.drop_table('production_tasks')
     op.drop_table('production_outputs')
     op.drop_table('production_materials')
+    op.drop_table('recipe_target_specs')
+    op.drop_table('recette_ingredients')
+    with op.batch_alter_table('production_orders', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_production_orders_batch_number'))
+
+    op.drop_table('production_orders')
     op.drop_table('process_machines')
     op.drop_table('mouvements_stock')
     op.drop_table('machine_documents')
@@ -398,9 +427,7 @@ def downgrade():
         batch_op.drop_index('idx_stock_article')
 
     op.drop_table('stocks')
-    op.drop_table('recipe_articles')
-    op.drop_table('recette_ingredients')
-    op.drop_table('production_orders')
+    op.drop_table('production_recipes')
     op.drop_table('palettisations')
     op.drop_table('machines')
     op.drop_table('division_employees')
@@ -412,7 +439,6 @@ def downgrade():
     op.drop_table('articles')
     op.drop_table('unites')
     op.drop_table('sites')
-    op.drop_table('production_recipes')
     op.drop_table('processes')
     op.drop_table('marques')
     op.drop_table('fournisseurs')

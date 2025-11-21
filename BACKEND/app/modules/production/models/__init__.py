@@ -6,4 +6,4 @@ from .production_output import ProductionOutput
 from .production_task import ProductionTask
 from .production_recipe import ProductionRecipe
 from .recette_ingredient import RecetteIngredient
-from .recipe_article import RecipeArticle
+from .recipe_target_spec import RecipeTargetSpec

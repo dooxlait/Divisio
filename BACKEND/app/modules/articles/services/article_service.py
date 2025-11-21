@@ -455,7 +455,8 @@ def etablir_relation_entre_article(df):
 
             for code_col, qty_col in composants_info:
                 code_composant = row.get(code_col)
-                if pd.isna(code_composant):
+                # Gestion des NaN pour éviter les erreurs si la cellule est vide
+                if pd.isna(code_composant) or str(code_composant).strip() == "":
                     continue
 
                 composant = Article.query.filter_by(code=str(code_composant)).first()
@@ -463,12 +464,17 @@ def etablir_relation_entre_article(df):
                     print(f"[WARN] Composant avec code '{code_composant}' non trouvé pour l'article '{code_article}'.")
                     continue
 
-                quantity = row.get(qty_col, 1) if code_col != "CODE CARTON" else 1
+                # Calcul de la quantité
+                quantity_val = row.get(qty_col, 1) if code_col != "CODE CARTON" else 1
+                
+                # --- CORRECTION ICI ---
+                # On utilise les noms définis dans le modèle ArticleComposition
                 article_composition = ArticleComposition(
-                    article_id=article.id,
-                    component_id=composant.id,
-                    quantity=quantity
+                    article_parent_id=article.id,    # Remplaçant article_id
+                    article_enfant_id=composant.id,  # Remplaçant component_id
+                    quantite=quantity_val            # Remplaçant quantity
                 )
+                
                 db.session.add(article_composition)
                 relations_etablies += 1
 
@@ -476,6 +482,8 @@ def etablir_relation_entre_article(df):
         return relations_etablies
 
     except Exception as e:
+        # Le rollback est important en cas d'erreur pour ne pas laisser la transaction ouverte
+        db.session.rollback() 
         raise RuntimeError(f"Erreur lors du traitement du DataFrame pour les relations : {str(e)}")
 
 def etablir_plan_palettisation(df):
@@ -551,46 +559,34 @@ def lire_articles():
     except Exception as e:
         raise RuntimeError(f"Erreur lors de la lecture des articles : {str(e)}")
 
-def lire_articles_filter(filters: Optional[Dict[str, Any]] = None) -> List[Article]:
+def lire_articles_filter(filters: Optional[Dict[str, Any]] = None):
     """
-    Lit les articles en base de données avec filtres optionnels.
-
-    Exemples d'utilisation :
-        lire_articles()                              → tous les articles
-        lire_articles(filters={"code": "PF123"})     → un seul article par code
-        lire_articles(filters={"is_active": True})   → tous les articles actifs
-        lire_articles(filters={"code": "PF123", "is_active": True})
-
-    Args:
-        filters: dictionnaire de filtres (clé = nom du champ, valeur = valeur recherchée)
-
-    Returns:
-        List[Article]: liste d'articles (1 seul si filtre par code, plusieurs sinon)
+    Lit les articles.
+    ATTENTION : Retourne un OBJET unique si filtre 'code', sinon une LISTE.
     """
-    print("[INFO] Lecture des articles en base de données avec filtres :", filters or "aucun")
+    # print(f"[INFO] Lecture des articles avec filtres : {filters}")
 
     query = Article.query
 
     if filters:
-        # Construction dynamique des conditions
         conditions = []
         for key, value in filters.items():
             if hasattr(Article, key):
                 conditions.append(getattr(Article, key) == value)
             else:
-                print(f"[WARN] Filtre ignoré : le champ '{key}' n'existe pas sur Article")
+                print(f"[WARN] Filtre ignoré : '{key}' n'existe pas sur Article")
         
         if conditions:
             query = query.filter(and_(*conditions))
 
     try:
-        results = query.all()
         if filters and "code" in filters:
-            # Si on cherche par code → on s'attend à 0 ou 1 résultat
-            return results[0] if results else None
-        return results
+            # .first() est plus propre que .all()[0] car il gère le cas vide sans exception
+            return query.first() 
+        
+        return query.all()
     except Exception as e:
-        raise RuntimeError(f"Erreur lors de la lecture des articles : {str(e)}")
+        raise RuntimeError(f"Erreur lecture articles : {str(e)}")
 
 
 # Fonctions orchestratrices / cas d’usage

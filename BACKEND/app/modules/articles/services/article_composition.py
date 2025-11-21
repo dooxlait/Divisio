@@ -1,16 +1,19 @@
 # Module: BACKEND/app/modules/articles/services/article_composition.py
 
+from typing import Dict, Any
 from app.core.extensions import db
+import pandas as pd
+
 from app.modules.articles.models import Article, CaracteristiqueArticle
-from app.common.helper import *
+from app.common.helper import *  # Assurez-vous que ce module existe
+
+# ==============================================================================
+# FONCTIONS CRUD COMPOSITIONS (Placeholders)
+# ==============================================================================
 
 def create_article_composition(article_id: int, composition_data: dict) -> dict:
     """
     Create a new article composition.
-
-    :param article_id: ID of the article to which the composition belongs.
-    :param composition_data: Data for the new composition.
-    :return: The created article composition as a dictionary.
     """
     # Implementation goes here
     pass
@@ -18,102 +21,111 @@ def create_article_composition(article_id: int, composition_data: dict) -> dict:
 def update_article_composition(composition_id: int, composition_data: dict) -> dict:
     """
     Update an existing article composition.
-
-    :param composition_id: ID of the composition to update.
-    :param composition_data: Updated data for the composition.
-    :return: The updated article composition as a dictionary.
     """
     # Implementation goes here
     pass
+
+# ==============================================================================
+# FONCTIONS DE RECHERCHE
+# ==============================================================================
 
 def get_articles_by_caracteristique(**kwargs):
     """
     Récupère les articles filtrés selon les attributs de CaracteristiqueArticle.
     
-    Exemple d'utilisation :
-        get_articles_by_caracteristique(<url>?conditionnement_a_chaud=True, pcb=5)
+    Exemple : get_articles_by_caracteristique(conditionnement_a_chaud=True, pcb=5)
     """
     query = Article.query.join(Article.caracteristique)
     
     for attr, value in kwargs.items():
+        # Vérifie si l'attribut existe dans le modèle pour éviter les erreurs SQL
         column = getattr(CaracteristiqueArticle, attr, None)
         if column is not None:
             query = query.filter(column == value)
     
     return query.all()
 
-def rajouter_gamme_aux_articles(df):
+# ==============================================================================
+# FONCTIONS D'IMPORT ET MISE À JOUR (FACTORISÉES)
+# ==============================================================================
+
+def _update_caracteristiques_from_df(df: pd.DataFrame, mapping_col_attr: Dict[str, str]) -> int:
+    """
+    Fonction helper générique pour mettre à jour CaracteristiqueArticle depuis un DataFrame.
+    
+    :param df: Le DataFrame source.
+    :param mapping_col_attr: Dict { 'NomColonneExcel': 'nom_attribut_modele' }
+    :return: Nombre d'articles mis à jour.
+    """
     updated_count = 0
-    errors = []
 
     for _, row in df.iterrows():
-        code_article = row['Référence']
-        gamme = row.get('Gamme')
+        # Récupération du code article (clé de liaison)
+        code_article = row.get('Référence')
+        if not code_article:
+            continue
 
-        article = Article.query.filter_by(code=code_article).first()
+        # Recherche de l'article
+        article = Article.query.filter_by(code=str(code_article)).first()
         if not article:
             continue
 
-        # 1. Vérifier si une caractéristique existe déjà
+        # Gestion de la relation One-to-One (Get or Create)
         carac = article.caracteristique
-
-        # 2. Si elle n'existe pas, en créer une
         if not carac:
             carac = CaracteristiqueArticle(id_article=article.id)
             db.session.add(carac)
 
-        # 3. Mettre à jour la gamme
-        carac.gamme = gamme
+        # Mise à jour dynamique des champs basés sur le mapping
+        for col_excel, attr_model in mapping_col_attr.items():
+            val = row.get(col_excel)
+            # Conversion des NaN Pandas en None pour SQL
+            if pd.isna(val):
+                val = None
+            
+            # Mise à jour de l'attribut sur l'objet SQLAlchemy
+            if hasattr(CaracteristiqueArticle, attr_model):
+                setattr(carac, attr_model, val)
 
         updated_count += 1
 
+    # Commit unique à la fin du traitement
     try:
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        errors.append(str(e))
+        print(f"[ERREUR SQL] Lors de la mise à jour des caractéristiques : {str(e)}")
+        return 0
 
     return updated_count
 
-def rajoute_dlc_dgr_aux_articles(df):
+
+def rajoute_dlc_dgr_aux_articles(df: pd.DataFrame) -> int:
     """
     Met à jour les articles avec les valeurs DLC et DGR du DataFrame.
-    Retourne le nombre de caractéristiques mises à jour et les erreurs éventuelles.
     """
-    updated_count = 0
-    errors = []
+    mapping = {
+        'DLC': 'DLC',
+        'DGR': 'DGR'
+    }
+    return _update_caracteristiques_from_df(df, mapping)
 
-    for _, row in df.iterrows():
-        code_article = row['Référence']
-        dlc = row.get('DLC')
-        dgr = row.get('DGR')
 
-        article = Article.query.filter_by(code=code_article).first()
-        if not article:
-            continue
+def rajouter_infos_etiquettes_colis_aux_articles(df: pd.DataFrame) -> int:
+    """
+    Met à jour l'information d'étiquetage colis.
+    """
+    mapping = {
+        'etiquette_sur_chaque_colis': 'etiquette_sur_chaque_colis'
+    }
+    return _update_caracteristiques_from_df(df, mapping)
 
-        carac = CaracteristiqueArticle.query.filter_by(id_article=article.id).first()
-        if not carac:
-            carac = CaracteristiqueArticle(id_article=article.id)
 
-        carac.DLC = dlc
-        carac.DGR = dgr
-
-        if carac not in db.session:
-            db.session.add(carac)
-
-        if hasattr(article.caracteristique, 'append'):
-            if carac not in article.caracteristique:
-                article.caracteristique.append(carac)
-
-        updated_count += 1
-
-    try:
-        db.session.commit()
-    except Exception as e:
-        db.session.rollback()
-        errors.append(str(e))
-
-    return updated_count
-
-    
+def rajouter_gamme_aux_articles(df: pd.DataFrame) -> int:
+    """
+    Met à jour la gamme des articles.
+    """
+    mapping = {
+        'Gamme': 'gamme'
+    }
+    return _update_caracteristiques_from_df(df, mapping)

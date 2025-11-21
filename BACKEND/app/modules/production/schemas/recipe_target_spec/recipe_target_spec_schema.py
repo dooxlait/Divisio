@@ -1,20 +1,20 @@
-# BACKEND\app\modules\production\schemas\production_recipe\production_recipe_schema.py
+# BACKEND\app\modules\production\schemas\recipe_target_spec\recipe_target_spec_schema.py
 
 from marshmallow import fields
 
 from app.common.base.base_schema import BaseSchema
 from app.core.extensions import db
-from app.modules.production.models.production_recipe import ProductionRecipe
+from app.modules.production.models.recipe_target_spec import RecipeTargetSpec
 
-class ProductionRecipeSchema(BaseSchema):
+class RecipeTargetSpecSchema(BaseSchema): 
     """
-    Schéma spécifique pour le modèle ProductionRecipe.
+    Schéma spécifique pour le modèle RecetteIngredient.
     On pourra ajouter ici des champs supplémentaires ou des nested fields.
     """
     # Ajoutez ici des champs spécifiques si nécessaire
 
     class Meta:
-        model = ProductionRecipe  # Remplacez par le modèle ProductionRecipe approprié
+        model = RecipeTargetSpec  
         load_instance = True
         include_fk = True
         sqla_session = db.session

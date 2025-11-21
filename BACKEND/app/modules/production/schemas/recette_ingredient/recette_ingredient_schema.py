@@ -4,6 +4,7 @@ from marshmallow import fields
 
 from app.common.base.base_schema import BaseSchema
 from app.core.extensions import db
+from app.modules.production.models.recette_ingredient import RecetteIngredient
 
 class RecetteIngredientSchema(BaseSchema): 
     """
@@ -13,7 +14,7 @@ class RecetteIngredientSchema(BaseSchema):
     # Ajoutez ici des champs spécifiques si nécessaire
 
     class Meta:
-        model = None  # Remplacez par le modèle RecetteIngredient approprié
+        model = RecetteIngredient  #
         load_instance = True
         include_fk = True
         sqla_session = db.session

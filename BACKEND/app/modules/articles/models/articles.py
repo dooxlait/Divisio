@@ -11,6 +11,7 @@ class Article(BaseModel):
     code = db.Column(db.String(50), nullable=False, unique=True)
     designation = db.Column(db.String(255), nullable=False)
     is_active = db.Column(db.Boolean, default=True)
+    type_article = db.Column(db.String(20)) # MP, BASE, VRAC, PF
 
     # Clés étrangères
     id_categorie = db.Column(db.String(36), db.ForeignKey("categories.id"), nullable=True)
@@ -21,25 +22,8 @@ class Article(BaseModel):
     # ===============================================================
     # RELATIONSHIPS
     # ===============================================================
-    category = db.relationship("Category", back_populates="articles")
-    marque = db.relationship("Marque", back_populates="articles")
-    fournisseur = db.relationship("Fournisseur", back_populates="articles")
-    unite = db.relationship("Unite", back_populates="articles", foreign_keys=[id_unite])
-
-    compositions = db.relationship(
-        "ArticleComposition",
-        foreign_keys="ArticleComposition.article_id",
-        back_populates="article",
-        cascade="all, delete-orphan"
-    )
-
-    palettisation = db.relationship(
-        "Palettisation",
-        back_populates="article",
-        uselist=False,
-        cascade="all, delete-orphan"
-    )
-
+    
+    # 1. Extension (Caractéristique)
     caracteristique = db.relationship(
         "CaracteristiqueArticle",
         back_populates="article",
@@ -47,32 +31,49 @@ class Article(BaseModel):
         cascade="all, delete-orphan"
     )
 
-    stocks = db.relationship(
-        "Stock",
-        back_populates="article",
+    # 2. Process (Recettes) -> C'EST ICI QUE SE TROUVE VOTRE ERREUR
+    # Le nom ici "recette_process" doit être identique au back_populates dans ProductionRecipe
+    recette_process = db.relationship(
+        "ProductionRecipe",
+        back_populates="article_output",
+        uselist=False, 
         cascade="all, delete-orphan"
     )
 
-    production_orders = db.relationship(
-        "ProductionOrder",
-        back_populates="article",
-        cascade="all, delete-orphan",
-        lazy="dynamic"
-    )
-    
-    # Recettes de production (produit fini)
-    recettes = db.relationship(
-        "ProductionRecipe",
-        secondary="recipe_articles",
-        back_populates="articles"
+    # 3. Conditionnement (BOM)
+    composition_enfants = db.relationship(
+        "ArticleComposition",
+        foreign_keys="ArticleComposition.article_parent_id",
+        back_populates="article_parent",
+        cascade="all, delete-orphan"
     )
 
-    # ===============================================================
-    # Méthodes utiles
-    # ===============================================================
+    composition_parents = db.relationship(
+        "ArticleComposition",
+        foreign_keys="ArticleComposition.article_enfant_id",
+        back_populates="article_enfant"
+    )
+
+    # 4. Production & Stocks
+    production_orders = db.relationship("ProductionOrder", back_populates="article", lazy="dynamic")
+    stocks = db.relationship("Stock", back_populates="article", cascade="all, delete-orphan")
+    
+    # Référentiels
+    category = db.relationship("Category", back_populates="articles")
+    marque = db.relationship("Marque", back_populates="articles")
+    fournisseur = db.relationship("Fournisseur", back_populates="articles")
+    unite = db.relationship("Unite", back_populates="articles", foreign_keys=[id_unite])
+    
+    # Palettisation
+    palettisation = db.relationship("Palettisation", back_populates="article", uselist=False, cascade="all, delete-orphan")
+
     def __repr__(self):
-        return f"<Article {self.code} - {self.designation}>"
+        return f"<Article {self.code}>"
 
     @property
     def unite_code(self):
         return self.unite.code if self.unite else None
+
+    @property
+    def dlc(self):
+        return self.caracteristique.DLC if self.caracteristique else 0
