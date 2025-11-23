@@ -71,6 +71,7 @@ def create_recipe_by_list(df):
             article_output_code = row.get("article_output_code", "")
             taille_lot_ref = row.get("taille_lot_ref", "")
             description = row.get("description", "")
+            type_recette = row.get("type_recette", "process")
 
             if not recipe_code:
                 raise ValueError("Le code recette (recipe_code) est obligatoire.")
@@ -93,6 +94,7 @@ def create_recipe_by_list(df):
                 "description": description,
                 "taille_lot_ref": taille_lot_ref,
                 "article_output_id": article_output_id,
+                "recipe_type": type_recette
             }
 
             # Ajout à la session (sans commit)

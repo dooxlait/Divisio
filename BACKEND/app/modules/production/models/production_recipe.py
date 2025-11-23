@@ -14,6 +14,7 @@ class ProductionRecipe(BaseModel):
     version = db.Column(db.Integer, default=1) # Gestion des évolutions de recette
     is_active = db.Column(db.Boolean, default=True)
     description = db.Column(db.String(500), nullable=True)
+    recipe_type = db.Column(db.String(20), default="process") # 'process' ou 'packaging'
 
     # ==========================================
     # LIEN PROCESS (OUTPUT)
