@@ -4,6 +4,7 @@ from app.modules.production.models.recette_ingredient import RecetteIngredient
 from app.modules.production.models.production_recipe import ProductionRecipe
 from app.modules.production.schemas.recette_ingredient import RecetteIngredientSchema
 from sqlalchemy.orm import joinedload
+from app.core.extensions import db
 
 class ProductionRecipeSchema(BaseSchema):
     ingredients = fields.Nested(RecetteIngredientSchema, many=True)
@@ -11,7 +12,9 @@ class ProductionRecipeSchema(BaseSchema):
     class Meta:
         model = ProductionRecipe
         load_instance = True
-        include_fk = True
+        sqla_session = db.session
+        # On exclut 'production_orders' pour éviter une boucle infinie (Order -> Recipe -> Orders...)
+        exclude = ('production_orders',)
 
     @post_dump(pass_many=False)
     def expand_subrecipes(self, data, **kwargs):

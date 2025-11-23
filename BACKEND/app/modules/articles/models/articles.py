@@ -31,7 +31,7 @@ class Article(BaseModel):
         cascade="all, delete-orphan"
     )
 
-    # 2. Process (Recettes) -> C'EST ICI QUE SE TROUVE VOTRE ERREUR
+    # 2. Process (Recettes) 
     # Le nom ici "recette_process" doit être identique au back_populates dans ProductionRecipe
     recette_process = db.relationship(
         "ProductionRecipe",
@@ -77,3 +77,17 @@ class Article(BaseModel):
     @property
     def dlc(self):
         return self.caracteristique.DLC if self.caracteristique else 0
+    
+    @property
+    def active_recipe(self):
+        """Retourne la recette active (Process) ou None si c'est une MP"""
+        # Si relation One-to-Many
+        if self.recette_process:
+             # Si c'est une liste, on cherche la version active
+            if isinstance(self.recette_process, list):
+                for r in self.recette_process:
+                    if r.is_active: return r
+            # Si c'est un objet unique (votre config actuelle uselist=False)
+            else:
+                return self.recette_process
+        return None

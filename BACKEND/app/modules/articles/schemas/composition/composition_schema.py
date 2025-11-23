@@ -50,4 +50,3 @@ class ArticleCompositionSchema(BaseSchema):
         include_fk = True
         sqla_session = None
 
-  
